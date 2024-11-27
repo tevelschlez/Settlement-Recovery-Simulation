@@ -32,8 +32,8 @@ class Plan {
         const int Plan::getlifeQualityScore() const{
             return life_quality_score;
         }
-        const int getEconomyScore() const{
-
+        const int Plan::getEconomyScore() const{
+            return economy_score;
         }
         const int getEnvironmentScore() const{
 
