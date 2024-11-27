@@ -38,7 +38,7 @@ class Plan {
         const int Plan::getEnvironmentScore() const{
             return environment_score;
         }
-        void setSelectionPolicy(SelectionPolicy *selectionPolicy){
+        void Plan::setSelectionPolicy(SelectionPolicy *selectionPolicy){
 
         }
         void step(){
@@ -55,8 +55,8 @@ class Plan {
         void printStatus(){
 
         }
-        const vector<Facility*> &getFacilities() const{
-
+        const vector<Facility*> &Plan:: getFacilities() const{
+            return facilities;
         }
         void addFacility(Facility* facility){
 
