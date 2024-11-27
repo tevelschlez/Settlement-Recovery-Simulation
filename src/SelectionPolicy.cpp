@@ -5,17 +5,6 @@ using std::vector;
 
 class SelectionPolicy {
     public:
-        virtual const FacilityType& SelectionPolicy::selectFacility(const vector<FacilityType>& facilitiesOptions) {
-            //chooses the next facility according to the policy. pay attention to the construction limit
-        }
-
-        virtual const string SelectionPolicy:: toString() const {
-            return "";
-        }
-
-        virtual SelectionPolicy* SelectionPolicy:: clone() const{
-
-        }
 
         virtual SelectionPolicy::~SelectionPolicy() {
 
