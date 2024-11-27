@@ -35,8 +35,8 @@ class Plan {
         const int Plan::getEconomyScore() const{
             return economy_score;
         }
-        const int getEnvironmentScore() const{
-
+        const int Plan::getEnvironmentScore() const{
+            return environment_score;
         }
         void setSelectionPolicy(SelectionPolicy *selectionPolicy){
 
