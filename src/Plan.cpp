@@ -29,8 +29,8 @@ class Plan {
             status=PlanStatus::BUSY;
         }
 
-        const int getlifeQualityScore() const{
-
+        const int Plan::getlifeQualityScore() const{
+            return life_quality_score;
         }
         const int getEconomyScore() const{
 
