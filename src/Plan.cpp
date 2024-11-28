@@ -5,13 +5,13 @@
 #include "SelectionPolicy.h"
 using std::vector;
 
-
 class Plan {
     public:
-        Plan::Plan(const int planId, const Settlement &settlement, SelectionPolicy *selectionPolicy, const vector<FacilityType> &facilityOptions):plan_id(plan_id),settlement(settlement),selectionPolicy(selectionPolicy),facilityOptions(facilityOptions){
 
-            status=PlanStatus::AVALIABLE;
+        Plan::Plan(const int planId, const Settlement &settlement, SelectionPolicy *selectionPolicy, const vector<FacilityType> &facilityOptions) : plan_id(plan_id), settlement(settlement), selectionPolicy(selectionPolicy), facilityOptions(facilityOptions),status(PlanStatus::AVALIABLE){}
 
+
+        void Plan::activateSelectionPolicy(){
             int construcion_limit;
             if(settlement.getType()==SettlementType::VILLAGE)
                 construcion_limit=1;
@@ -19,10 +19,8 @@ class Plan {
                 construcion_limit=2;
             if(settlement.getType()==SettlementType::METROPOLIS)
                 construcion_limit=3;
-
             for(int i=1;i<=construcion_limit;i++){
                 Facility* f_to_push=new Facility(selectionPolicy->selectFacility(facilityOptions),settlement.getName());
-                facilities.push_back(f_to_push);
                 underConstruction.push_back(f_to_push);
             }
 
@@ -47,7 +45,8 @@ class Plan {
                 underConstruction[i]->step();
 
                 if(underConstruction[i]->getStatus()==FacilityStatus::OPERATIONAL){
-                    underConstruction.erase(underConstruction.begin()+i);
+                    facilities.push_back(underConstruction[i]);
+                    underConstruction.erase(underConstruction.begin() + i);
                     i=i-1;
                 }
             }

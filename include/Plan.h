@@ -22,6 +22,7 @@ class Plan {
         const vector<Facility*> &getFacilities() const;
         void addFacility(Facility* facility);
         const string toString() const;
+        void activateSelectionPolicy();
 
     private:
         int plan_id;
