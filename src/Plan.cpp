@@ -8,7 +8,7 @@ using std::vector;
 class Plan {
     public:
 
-        Plan::Plan(const int planId, const Settlement &settlement, SelectionPolicy *selectionPolicy, const vector<FacilityType> &facilityOptions) : plan_id(plan_id), settlement(settlement), selectionPolicy(selectionPolicy), facilityOptions(facilityOptions),status(PlanStatus::AVALIABLE){}
+        Plan::Plan(const int planId, const Settlement &settlement, SelectionPolicy *selectionPolicy, const vector<FacilityType> &facilityOptions) : plan_id(planId), settlement(settlement), selectionPolicy(selectionPolicy), facilityOptions(facilityOptions),status(PlanStatus::AVALIABLE){}
 
 
         void Plan::activateSelectionPolicy(){
@@ -36,9 +36,9 @@ class Plan {
         const int Plan::getEnvironmentScore() const{
             return environment_score;
         }
-        void Plan::setSelectionPolicy(SelectionPolicy *selectionPolicy){
 
-        }
+        void Plan::setSelectionPolicy(SelectionPolicy *selectionPolicy) { this->selectionPolicy = selectionPolicy; }
+
         void step(){
 
             for( int i=0; i<underConstruction.size();i++){
@@ -57,9 +57,14 @@ class Plan {
         const vector<Facility*> &Plan:: getFacilities() const{
             return facilities;
         }
+        
         void addFacility(Facility* facility){
-
+            if(facility->getStatus()==FacilityStatus::UNDER_CONSTRUCTIONS)
+                underConstruction.push_back(facility);
+            else
+                facilities.push_back(facility);
         }
+
         const string toString() const{
 
         }
