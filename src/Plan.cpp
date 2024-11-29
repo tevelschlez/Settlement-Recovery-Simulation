@@ -104,6 +104,7 @@ class Plan {
             return str;
         }
 
+        //rule of 5
 
         Plan::~Plan(){
             for(auto facility:facilities)
@@ -115,14 +116,14 @@ class Plan {
         }
 
         //shallow copy of a constant reference - facilitiyOptions. since it can not be deleted or changed from a diff reference
-        Plan::Plan(Plan &other):plan_id(other.plan_id), settlement(other.settlement),selectionPolicy(other.selectionPolicy),status(other.status),facilities(other.facilities),life_quality_score(other.life_quality_score),economy_score(other.economy_score),environment_score(other.environment_score){
+        Plan::Plan(Plan &other):plan_id(other.plan_id), settlement(other.settlement),selectionPolicy(other.selectionPolicy),status(other.status),facilityOptions(other.facilityOptions),life_quality_score(other.life_quality_score),economy_score(other.economy_score),environment_score(other.environment_score){
             for(auto facility:other.facilities)
                 facilities.push_back(facility);
             for(auto facility:other.underConstruction)
                 underConstruction.push_back(facility);
         }
 
-
+        Plan::Plan(Plan &&other) noexcept : plan_id(other.plan_id), settlement(other.settlement), selectionPolicy(other.selectionPolicy),facilityOptions(other.facilityOptions), status(other.status), life_quality_score(other.life_quality_score), economy_score(other.economy_score), environment_score(other.environment_score) ,facilities(std::move(other.facilities)),underConstruction(std::move(other.underConstruction)){}
 
     private:
         int plan_id;
