@@ -24,6 +24,9 @@ class Plan {
         const string toString() const;
         void activateSelectionPolicy();
 
+        //rule of 5:
+        ~Plan();//destructors
+
     private:
         int plan_id;
         const Settlement &settlement;
