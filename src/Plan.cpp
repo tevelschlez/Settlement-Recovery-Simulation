@@ -97,6 +97,16 @@ class Plan {
             return str;
         }
 
+
+        Plan::~Plan(){
+            for(auto facility:facilities)
+                delete facility;
+            for(auto facility:underConstruction)
+                delete facility;
+
+            delete selectionPolicy;
+        }
+
     private:
         int plan_id;
         const Settlement &settlement;
