@@ -138,8 +138,13 @@ class Simulation{
 
         }
         Settlement &Simulation::getSettlement(const string &settlementName){
-
+            for(auto &settlement:settlements){
+                if (settlement->getName()==settlementName)
+                    return *settlement;
+            }
         }
+
+        
         Plan &Simulation::getPlan(const int planID){
 
         }
