@@ -24,7 +24,8 @@ class Plan {
         const string toString() const;
         void activateSelectionPolicy();
 
-        const int getID();
+        const int getID() const;
+        const Settlement& Plan::getSettlement() const;
         const int getConstructionLimit();
 
         //rule of 5:

@@ -122,8 +122,11 @@ class Plan {
             return str;
         }
 
-        const int getID(){
+        const int Plan::getID() const{
             return plan_id;
+        }
+        const Settlement& Plan::getSettlement() const {
+            return settlement;
         }
 
         //rule of 5

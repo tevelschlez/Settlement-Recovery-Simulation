@@ -122,16 +122,19 @@ class Simulation{
                     std::cout << "The simulation has started" << std::endl;
             }
         }
+        // change status to AVALIABLE - not completed
+
         void Simulation::addPlan(const Settlement &settlement, SelectionPolicy *selectionPolicy){
-            if (isSettlementExists(settlement.getName()){
-                std::cout << "settlement already exists" << std::endl;
+            if (!isSettlementExists(settlement.getName()) || !isValidSelectionPolicy(selectionPolicy->toString())){
+                std::cout << "Cannot create this plan" << std::endl;
                 return;
             }
-        
-        
-            
-
+            planCounter++;
+            plans.push_back(Plan(planCounter, settlement, selectionPolicy, facilitiesOptions));
+    
         }
+        
+
         void Simulation::addAction(BaseAction *action){
             actionsLog.push_back(action);
 
@@ -181,10 +184,127 @@ class Simulation{
 
         }
         void Simulation::close(){
-
+            for (const auto& plan : plans) {
+                std::cout << "PlanID: " << plan.getID() << std::endl;
+                std::cout << "SettlementName: " << plan.getSettlement().getName() << std::endl;
+                std::cout << "LifeQuality_Score: " << plan.getlifeQualityScore() << std::endl;
+                std::cout << "Economy_Score: " << plan.getEconomyScore() << std::endl;
+                std::cout << "Environment_Score: " << plan.getEnvironmentScore() << std::endl;
+            }
+            for (auto &settlement : settlements) {
+                delete settlement;
+            }
+            settlements.clear();
+            isRunning = false;
         }
         void Simulation::open(){
             isRunning = true;
         }
+
+        bool Simulation::isValidSelectionPolicy(const string &selectionPolicy){
+            return selectionPolicy=="nve" || selectionPolicy=="bal" || selectionPolicy=="eco" || selectionPolicy=="env";
+        }
+
+    // Rule of Five
+
+    // Destructor
+        ~Simulation() {
+        for (auto& settlement : settlements) {
+            delete settlement;
+        }
+        settlements.clear();
+
+        for (auto& action : actionsLog) {
+            delete action;
+        }
+        actionsLog.clear();
+    }
+    
+
+    // Copy Constructor
+    Simulation(const Simulation& other)
+        : isRunning(other.isRunning),
+        planCounter(other.planCounter),
+        facilitiesOptions(other.facilitiesOptions) {
+        for (const auto& settlement : other.settlements) {
+            settlements.push_back(new Settlement(*settlement));
+        }
+        for (const auto& action : other.actionsLog) {
+            actionsLog.push_back(action->clone()); // Assuming BaseAction has a clone method
+        }
+        plans = other.plans; // `Plan` must handle its own Rule of Five
+    }
+
+    // Copy Assignment Operator
+    Simulation& operator=(const Simulation& other) {
+        if (this != &other) {
+            // Free existing resources
+            for (auto& settlement : settlements) {
+                delete settlement;
+            }
+            settlements.clear();
+
+            for (auto& action : actionsLog) {
+                delete action;
+            }
+            actionsLog.clear();
+
+            // Copy data
+            isRunning = other.isRunning;
+            planCounter = other.planCounter;
+            facilitiesOptions = other.facilitiesOptions;
+
+            // Deep copy settlements
+            for (const auto& settlement : other.settlements) {
+                settlements.push_back(new Settlement(*settlement));
+            }
+
+            // Deep copy actions
+            for (const auto& action : other.actionsLog) {
+                actionsLog.push_back(action->clone());
+            }
+
+            plans = other.plans; 
+        }
+        return *this;
+    }
+
+    // Move Constructor
+    Simulation(Simulation&& other) noexcept
+        : isRunning(other.isRunning),
+        planCounter(other.planCounter),
+        settlements(std::move(other.settlements)),
+        actionsLog(std::move(other.actionsLog)),
+        plans(std::move(other.plans)),
+        facilitiesOptions(std::move(other.facilitiesOptions)) {
+        other.isRunning = false;
+    }
+
+    // Move Assignment Operator
+    Simulation& operator=(Simulation&& other) noexcept {
+        if (this != &other) {
+            // Free existing resources
+            for (auto& settlement : settlements) {
+                delete settlement;
+            }
+            settlements.clear();
+
+            for (auto& action : actionsLog) {
+                delete action;
+            }
+            actionsLog.clear();
+
+            // Move data
+            isRunning = other.isRunning;
+            planCounter = other.planCounter;
+            settlements = std::move(other.settlements);
+            actionsLog = std::move(other.actionsLog);
+            plans = std::move(other.plans);
+            facilitiesOptions = std::move(other.facilitiesOptions);
+
+            other.isRunning = false;
+        }
+        return *this;
+    }
 };
 

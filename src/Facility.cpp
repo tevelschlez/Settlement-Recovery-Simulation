@@ -91,9 +91,9 @@ class Facility: public FacilityType {
             else    
                 str+="under_construction";
 
-           str+=std::to_string(timeLeft);
+            str+=std::to_string(timeLeft);
 
-           return str;
+            return str;
             
         }
 

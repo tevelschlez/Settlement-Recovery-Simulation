@@ -152,7 +152,7 @@ class SustainabilitySelection: public SelectionPolicy {
 
 
         const FacilityType& SustainabilitySelection:: selectFacility(const vector<FacilityType>& facilitiesOptions) {
-             if(lastSelectedIndex==facilitiesOptions.size()-1)
+            if(lastSelectedIndex==facilitiesOptions.size()-1)
                 lastSelectedIndex=-1;
 
             bool isFound=false;

@@ -22,14 +22,14 @@ public:
         }
 
         const string Settlement::toString() const{
-                string str=name+" ";
+                string str=name + " ";
 
                 if(type== SettlementType::VILLAGE)
-                        str+="village";
+                        str+="Village";
                 else if(type ==  SettlementType::CITY)
-                        str+="city";
+                        str+="City";
                 else if(type == SettlementType::METROPOLIS)
-                        str+="metropolis";
+                        str+="Metropolis";
                 
                 return str;
         }
