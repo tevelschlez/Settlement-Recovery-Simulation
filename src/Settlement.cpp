@@ -6,11 +6,11 @@ using std::vector;
 
 class Settlement{
 
-    private:
-            const string name;
-            SettlementType type;
+private:
+        const string name;
+        SettlementType type;
 
-    public:
+public:
         Settlement::Settlement(const string &name, SettlementType type):name(name),type(type){}
 
         const string &Settlement::getName() const{
@@ -18,7 +18,7 @@ class Settlement{
         }
 
         SettlementType getType() const{
-            return type;
+                return type;
         }
 
         const string Settlement::toString() const{
@@ -33,6 +33,4 @@ class Settlement{
                 
                 return str;
         }
-
-        
 };
