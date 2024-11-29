@@ -26,7 +26,8 @@ class Plan {
 
         //rule of 5:
         ~Plan();//destructors
-        Plan(Plan &other);
+        Plan(Plan &other);//copy constructor
+        Plan(Plan &&other);//move copy constructor
 
     private:
         int plan_id;
