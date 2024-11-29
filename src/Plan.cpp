@@ -14,24 +14,31 @@ class Plan {
         //need to initialize the scores to be 0
         Plan::Plan(const int planId, const Settlement &settlement, SelectionPolicy *selectionPolicy, const vector<FacilityType> &facilityOptions) : plan_id(planId), settlement(settlement), selectionPolicy(selectionPolicy), facilityOptions(facilityOptions),status(PlanStatus::AVALIABLE),life_quality_score(0),economy_score(0),environment_score(0){}
 
-        
-        void Plan::activateSelectionPolicy(){//updating the plan scores according to the facilities that are chosen
-            int construcion_limit;
-            if(settlement.getType()==SettlementType::VILLAGE)
-                construcion_limit=1;
-            if(settlement.getType()==SettlementType::CITY)
-                construcion_limit=2;
-            if(settlement.getType()==SettlementType::METROPOLIS)
-                construcion_limit=3;
-            for(int i=1;i<=construcion_limit;i++){
-                Facility* f_to_push=new Facility(selectionPolicy->selectFacility(facilityOptions),settlement.getName());
-                underConstruction.push_back(f_to_push);
-                life_quality_score += f_to_push->getLifeQualityScore();
-                economy_score += f_to_push->getEconomyScore();
-                environment_score += f_to_push->getEnvironmentScore();
-            }
 
-            status=PlanStatus::BUSY;
+
+        const int Plan::getConstructionLimit(){
+            int construcion_limit;
+            if (settlement.getType() == SettlementType::VILLAGE)
+                construcion_limit = 1;
+            if (settlement.getType() == SettlementType::CITY)
+                construcion_limit = 2;
+            if (settlement.getType() == SettlementType::METROPOLIS)
+                construcion_limit = 3;
+            return construcion_limit;
+        }
+
+        void Plan::activateSelectionPolicy(){//updating the plan scores according to the facilities that are chosen
+
+            Facility* f_to_push=new Facility(selectionPolicy->selectFacility(facilityOptions),settlement.getName());
+            underConstruction.push_back(f_to_push);
+            life_quality_score += f_to_push->getLifeQualityScore();
+            economy_score += f_to_push->getEconomyScore();
+            environment_score += f_to_push->getEnvironmentScore();
+
+            if(underConstruction.size()==getConstructionLimit())
+                status = PlanStatus::BUSY;
+            if(underConstruction.size()<getConstructionLimit())
+                status = PlanStatus::AVALIABLE;
         }
 
         const int Plan::getlifeQualityScore() const{
@@ -56,6 +63,9 @@ class Plan {
                 if(underConstruction[i]->getStatus()==FacilityStatus::OPERATIONAL){
                     facilities.push_back(underConstruction[i]);
                     underConstruction.erase(underConstruction.begin() + i);
+                    while (status==PlanStatus::AVALIABLE)
+                        activateSelectionPolicy();
+
                     i=i-1;
                 }
             }
@@ -74,8 +84,11 @@ class Plan {
         //if the length of underConstruction is equal to constuction_limit we can not add a plan
 
         void addFacility(Facility* facility){//update the plan scores according to the facility
-            if(facility->getStatus()==FacilityStatus::UNDER_CONSTRUCTIONS)
+            if(facility->getStatus()==FacilityStatus::UNDER_CONSTRUCTIONS && underConstruction.size()<getConstructionLimit())
                 underConstruction.push_back(facility);
+            else if (facility->getStatus()==FacilityStatus::UNDER_CONSTRUCTIONS&& underConstruction.size()==getConstructionLimit())
+                std::cout << "cannot add this facility to the under construction list" << std::endl;
+                
             else
                 facilities.push_back(facility);
 
