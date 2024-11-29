@@ -24,6 +24,8 @@ class Plan {
         const string toString() const;
         void activateSelectionPolicy();
 
+        const int getID();
+
         //rule of 5:
         ~Plan();//destructors
         Plan(Plan &other);//copy constructor

@@ -104,6 +104,10 @@ class Plan {
             return str;
         }
 
+        const int getID(){
+            return plan_id;
+        }
+
         //rule of 5
 
         Plan::~Plan(){

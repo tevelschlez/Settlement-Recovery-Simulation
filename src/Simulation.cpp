@@ -144,10 +144,13 @@ class Simulation{
             }
         }
 
-        
-        Plan &Simulation::getPlan(const int planID){
 
+        Plan &Simulation::getPlan(const int planID){
+            for(auto &plan:plans)
+                if(plan.getID()==planID)
+                    return plan;
         }
+
         void Simulation::step(){
 
         }
