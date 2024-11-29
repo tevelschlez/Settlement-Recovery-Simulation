@@ -26,6 +26,7 @@ class Plan {
 
         //rule of 5:
         ~Plan();//destructors
+        Plan(Plan &other);
 
     private:
         int plan_id;
