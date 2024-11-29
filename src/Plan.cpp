@@ -1,4 +1,5 @@
 #include "Plan.h"
+#include <iostream>
 #include <vector>
 #include "Facility.h"
 #include "Settlement.h"
@@ -52,12 +53,16 @@ class Plan {
             }
         }
         void printStatus(){
-
+            if(status==PlanStatus::AVALIABLE)
+                std::cout << "available" << std::endl;
+            else
+                std::cout << "busy" << std::endl;
         }
+        
         const vector<Facility*> &Plan:: getFacilities() const{
             return facilities;
         }
-        
+
         void addFacility(Facility* facility){
             if(facility->getStatus()==FacilityStatus::UNDER_CONSTRUCTIONS)
                 underConstruction.push_back(facility);
@@ -66,7 +71,28 @@ class Plan {
         }
 
         const string toString() const{
+            string str = "plan id:" + std::to_string(plan_id) + " selection policy:" + selectionPolicy->toString();
+            if(status==PlanStatus::AVALIABLE)
+                str += " available";
+            else
+                str += " busy";
 
+            str += " life_quality_score:" + std::to_string(life_quality_score) += " economy_score:" + std::to_string(economy_score) + " enviroment_score:" + std::to_string(environment_score);
+
+            str += " operational_facilities:\n";
+
+            for (int i = 0; i < facilities.size(); i++)
+            {
+                str += facilities[i]->toString()+"\n";
+            }
+
+            str += "underConstruction_facilities:\n";
+
+            for (int i = 0; i < underConstruction.size();i++){
+                str += underConstruction[i]->toString() + "\n";
+            }
+
+            return str;
         }
 
     private:
