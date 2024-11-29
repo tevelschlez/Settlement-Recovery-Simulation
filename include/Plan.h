@@ -25,6 +25,7 @@ class Plan {
         void activateSelectionPolicy();
 
         const int getID();
+        const int getConstructionLimit();
 
         //rule of 5:
         ~Plan();//destructors

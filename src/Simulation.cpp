@@ -122,21 +122,47 @@ class Simulation{
                     std::cout << "The simulation has started" << std::endl;
             }
         }
-        void Simulation::addPlan(){
+        void Simulation::addPlan(const Settlement &settlement, SelectionPolicy *selectionPolicy){
+            if (isSettlementExists(settlement.getName()){
+                std::cout << "settlement already exists" << std::endl;
+                return;
+            }
+        
+        
+            
 
         }
-        void Simulation::addAction(){
+        void Simulation::addAction(BaseAction *action){
+            actionsLog.push_back(action);
 
         }
         bool Simulation::addSettlement(Settlement *settlement){
-
+            if (isSettlementExists(settlement->getName())){
+                    std::cout << "settlement already exists" << std::endl;
+                    return false;
+                }
+            settlements.push_back(settlement);
+            return true;
         }
+
         bool Simulation::addFacility(FacilityType facility){
-
+            for(auto &facility:facilitiesOptions)
+                if(facility.getName()==facility.getName()){
+                    std::cout << "facility already exists" << std::endl;
+                    return false;
+                }
+            facilitiesOptions.push_back(facility);
+            return true;
         }
+
         bool Simulation::isSettlementExists(const string &settlementName){
+            for(auto &settlement:settlements)
+                if(settlement->getName()==settlementName)
+                    return true;
+            return false;
 
         }
+
         Settlement &Simulation::getSettlement(const string &settlementName){
             for(auto &settlement:settlements){
                 if (settlement->getName()==settlementName)
