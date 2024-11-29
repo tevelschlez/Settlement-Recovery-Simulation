@@ -14,7 +14,7 @@ class Plan {
         Plan::Plan(const int planId, const Settlement &settlement, SelectionPolicy *selectionPolicy, const vector<FacilityType> &facilityOptions) : plan_id(planId), settlement(settlement), selectionPolicy(selectionPolicy), facilityOptions(facilityOptions),status(PlanStatus::AVALIABLE){}
 
 
-        void Plan::activateSelectionPolicy(){
+        void Plan::activateSelectionPolicy(){//updating the plan scores according to the facilities that are chosen
             int construcion_limit;
             if(settlement.getType()==SettlementType::VILLAGE)
                 construcion_limit=1;
@@ -25,6 +25,9 @@ class Plan {
             for(int i=1;i<=construcion_limit;i++){
                 Facility* f_to_push=new Facility(selectionPolicy->selectFacility(facilityOptions),settlement.getName());
                 underConstruction.push_back(f_to_push);
+                life_quality_score += f_to_push->getLifeQualityScore();
+                economy_score += f_to_push->getEconomyScore();
+                environment_score += f_to_push->getEnvironmentScore();
             }
 
             status=PlanStatus::BUSY;
@@ -65,11 +68,15 @@ class Plan {
             return facilities;
         }
 
-        void addFacility(Facility* facility){
+        void addFacility(Facility* facility){//update the plan scores according to the facility
             if(facility->getStatus()==FacilityStatus::UNDER_CONSTRUCTIONS)
                 underConstruction.push_back(facility);
             else
                 facilities.push_back(facility);
+
+            life_quality_score += facility->getLifeQualityScore();
+            economy_score += facility->getEconomyScore();
+            environment_score += facility->getEnvironmentScore();
         }
 
         const string toString() const{
@@ -114,6 +121,8 @@ class Plan {
             for(auto facility:other.underConstruction)
                 underConstruction.push_back(facility);
         }
+
+
 
     private:
         int plan_id;
