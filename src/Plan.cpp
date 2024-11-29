@@ -11,9 +11,10 @@ class Plan {
 
         //in this class there is a need to implement the 'Rule Of 5": destructor, copy constructor, copy assignment operator, move constructor, move assignment operator
 
+        //need to initialize the scores to be 0
         Plan::Plan(const int planId, const Settlement &settlement, SelectionPolicy *selectionPolicy, const vector<FacilityType> &facilityOptions) : plan_id(planId), settlement(settlement), selectionPolicy(selectionPolicy), facilityOptions(facilityOptions),status(PlanStatus::AVALIABLE){}
 
-
+        
         void Plan::activateSelectionPolicy(){//updating the plan scores according to the facilities that are chosen
             int construcion_limit;
             if(settlement.getType()==SettlementType::VILLAGE)
@@ -45,6 +46,8 @@ class Plan {
 
         void Plan::setSelectionPolicy(SelectionPolicy *selectionPolicy) { this->selectionPolicy = selectionPolicy; }
 
+
+        //if a facility is getting off from the under constructuion to the operational it meand there is a free spot to add to the list
         void step(){
 
             for( int i=0; i<underConstruction.size();i++){
@@ -67,6 +70,8 @@ class Plan {
         const vector<Facility*> &Plan:: getFacilities() const{
             return facilities;
         }
+
+        //if the length of underConstruction is equal to constuction_limit we can not add a plan
 
         void addFacility(Facility* facility){//update the plan scores according to the facility
             if(facility->getStatus()==FacilityStatus::UNDER_CONSTRUCTIONS)
