@@ -12,7 +12,7 @@ class Plan {
         //in this class there is a need to implement the 'Rule Of 5": destructor, copy constructor, copy assignment operator, move constructor, move assignment operator
 
         //need to initialize the scores to be 0
-        Plan::Plan(const int planId, const Settlement &settlement, SelectionPolicy *selectionPolicy, const vector<FacilityType> &facilityOptions) : plan_id(planId), settlement(settlement), selectionPolicy(selectionPolicy), facilityOptions(facilityOptions),status(PlanStatus::AVALIABLE){}
+        Plan::Plan(const int planId, const Settlement &settlement, SelectionPolicy *selectionPolicy, const vector<FacilityType> &facilityOptions) : plan_id(planId), settlement(settlement), selectionPolicy(selectionPolicy), facilityOptions(facilityOptions),status(PlanStatus::AVALIABLE),life_quality_score(0),economy_score(0),environment_score(0){}
 
         
         void Plan::activateSelectionPolicy(){//updating the plan scores according to the facilities that are chosen
