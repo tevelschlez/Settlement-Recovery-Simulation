@@ -15,7 +15,6 @@ using std::vector;
 
 class Auxiliary;
 
-static int Plan_id_counter = 0;
 
 class Simulation{
     private:
@@ -47,16 +46,26 @@ class Simulation{
 
                 if(actionType=="Plan"){
                     const string &settlementName = arguments[1];
-                    const string &SelectionPolicy = arguments[2];
+                    SelectionPolicy *selection;
+
+                    if(arguments[2]=="nve")
+                        selection = new NaiveSelection();
+                    else if (arguments[2]=="bal")
+                        selection = new BalancedSelection(0,0,0);
+                    else if (arguments[2]=="eco")
+                        selection = new EconomySelection();
+                    else if (arguments[2]=="env")
+                        selection=new SustainabilitySelection();
 
                     if(!isSettlementExists(settlementName))
                         std::cout << "settlement does not exist" << std::endl;
                     else{
 
-                    action = new AddPlan(settlementName, SelectionPolicy);
+                    action = new AddPlan(settlementName, arguments[2]);
 
                     actionsLog.push_back(action);
-                    //plans.push_back(new Plan(Plan_id_counter++,std::find(settlements.begin(),));
+                    planCounter++;
+                    plans.push_back(Plan(planCounter, getSettlement(settlementName), selection, facilitiesOptions));
                     }
                 }
 
