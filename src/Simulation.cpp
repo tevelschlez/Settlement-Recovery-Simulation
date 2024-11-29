@@ -15,6 +15,7 @@ using std::vector;
 
 class Auxiliary;
 
+static int Plan_id_counter = 0;
 
 class Simulation{
     private:
@@ -47,7 +48,16 @@ class Simulation{
                 if(actionType=="Plan"){
                     const string &settlementName = arguments[1];
                     const string &SelectionPolicy = arguments[2];
+
+                    if(!isSettlementExists(settlementName))
+                        std::cout << "settlement does not exist" << std::endl;
+                    else{
+
                     action = new AddPlan(settlementName, SelectionPolicy);
+
+                    actionsLog.push_back(action);
+                    //plans.push_back(new Plan(Plan_id_counter++,std::find(settlements.begin(),));
+                    }
                 }
 
                 if (actionType=="settlement"){
@@ -68,6 +78,8 @@ class Simulation{
                         }
 
                         action = new AddSettlement(selttlementName, settlementType);
+                        actionsLog.push_back(action);
+                        settlements.push_back(new Settlement(selttlementName, settlementType));
                 }
 
                 if (actionType=="Facility"){
@@ -94,35 +106,38 @@ class Simulation{
                     }
 
                     action = new AddFacility(facilityName, category, std::stoi(price), std::stoi(lifeQuality_score), std::stoi(economy_score), std::stoi(enviroment_Score));
-                }
-                
+                    actionsLog.push_back(action);
+                    facilitiesOptions.push_back(FacilityType(facilityName,category,std::stoi(price),std::stoi(lifeQuality_score),std::stoi(economy_score),std::stoi(enviroment_Score)));
+                    }
+
+                    std::cout << "The simulation has started" << std::endl;
             }
         }
-        void addPlan(){
+        void Simulation::addPlan(){
 
         }
-        void addAction(){
+        void Simulation::addAction(){
 
         }
-        bool addSettlement(Settlement *settlement){
+        bool Simulation::addSettlement(Settlement *settlement){
 
         }
-        bool addFacility(FacilityType facility){
+        bool Simulation::addFacility(FacilityType facility){
 
         }
-        bool isSettlementExists(const string &settlementName){
+        bool Simulation::isSettlementExists(const string &settlementName){
 
         }
-        Settlement &getSettlement(const string &settlementName){
+        Settlement &Simulation::getSettlement(const string &settlementName){
 
         }
-        Plan &getPlan(const int planID){
+        Plan &Simulation::getPlan(const int planID){
 
         }
-        void step(){
+        void Simulation::step(){
 
         }
-        void close(){
+        void Simulation::close(){
 
         }
         void Simulation::open(){
