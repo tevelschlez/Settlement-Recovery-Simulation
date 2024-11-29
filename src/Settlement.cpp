@@ -33,5 +33,4 @@ class Settlement{
                 
                 return str;
         }
-
 };
