@@ -33,7 +33,9 @@ class Simulation{
         //all the initialziations from the configuration file should be added to the matching list field of this class
 
             open();//isRunning =true
+            string command;
 
+<<<<<<< HEAD
             while (isRunning)
             {
                 //analyziation of the user input
@@ -41,85 +43,93 @@ class Simulation{
                 string command;
 
                 getline(std::cin, command);
+=======
+            getline(std::cin, command);
+>>>>>>> origin/featuresimulation-class
 
-                vector<string> arguments = Auxiliary::parseArguments(command);
+            vector<string> arguments = Auxiliary::parseArguments(command);
 
-                const string &actionType = arguments[0];
+            const string &actionType = arguments[0];
 
-                if(actionType=="Plan"){
-                    const string &settlementName = arguments[1];
-                    SelectionPolicy *selection;
+            if(actionType=="Plan"){
+                const string &settlementName = arguments[1];
+                SelectionPolicy *selection;
 
-                    if(arguments[2]=="nve")
-                        selection = new NaiveSelection();
-                    else if (arguments[2]=="bal")
-                        selection = new BalancedSelection(0,0,0);
-                    else if (arguments[2]=="eco")
-                        selection = new EconomySelection();
-                    else if (arguments[2]=="env")
-                        selection=new SustainabilitySelection();
+                if(arguments[2]=="nve")
+                    selection = new NaiveSelection();
+                else if (arguments[2]=="bal")
+                    selection = new BalancedSelection(0,0,0);
+                else if (arguments[2]=="eco")
+                    selection = new EconomySelection();
+                else if (arguments[2]=="env")
+                    selection=new SustainabilitySelection();
 
-                    if(!isSettlementExists(settlementName))
-                        throw std::invalid_argument("the settlement does not exist");
-                    else{
-                        planCounter++;
-                        plans.push_back(Plan(planCounter, getSettlement(settlementName), selection, facilitiesOptions));
-                    }
+                if(!isSettlementExists(settlementName))
+                    throw std::invalid_argument("the settlement does not exist");
+                else{
+                    planCounter++;
+                    plans.push_back(Plan(planCounter, getSettlement(settlementName), selection, facilitiesOptions));
                 }
+            }
 
-                if (actionType=="settlement"){
-                    const string &settlementName = arguments[1];
-                    SettlementType settlementType;
-                    switch(stoi(arguments[2])){
-                        case 0:
-                            settlementType = SettlementType::VILLAGE;
-                            break;
-                        case 1:
-                            settlementType = SettlementType::CITY;
-                            break;
-                        case 2:
-                            settlementType = SettlementType::METROPOLIS;
-                            break;
-                        default:
-                            throw std::invalid_argument("Unkown settlement type");
-                        }
-
-                        if(isSettlementExists(settlementName))
-                            throw std::invalid_argument("the settlement already exist - choose a uniqe name");
-                        else
-                            settlements.push_back(new Settlement(settlementName, settlementType));
-                }
-
-                if (actionType=="Facility"){
-                    const string &facilityName = arguments[1];
-                    FacilityCategory category;
-                    const string &price = arguments[3];
-                    const string &lifeQuality_score = arguments[4];
-                    const string &economy_score = arguments[5];
-                    const string &enviroment_Score = arguments[6];
-
-                    switch (stoi(arguments[2]))
-                    {
+            if (actionType=="settlement"){
+                const string &settlementName = arguments[1];
+                SettlementType settlementType;
+                switch(stoi(arguments[2])){
                     case 0:
-                        category = FacilityCategory::LIFE_QUALITY;
+                        settlementType = SettlementType::VILLAGE;
                         break;
                     case 1:
-                        category = FacilityCategory::ECONOMY;
+                        settlementType = SettlementType::CITY;
                         break;
                     case 2:
-                        category = FacilityCategory::ENVIRONMENT;
+                        settlementType = SettlementType::METROPOLIS;
                         break;
                     default:
-                        throw std::invalid_argument("Unkown facility category");
+                        throw std::invalid_argument("Unkown settlement type");
                     }
 
-                    if(isFacilityExists(facilityName))
-                        throw std::invalid_argument("facility already exist - choose a uniqe name");
+                    if(isSettlementExists(settlementName))
+                        throw std::invalid_argument("the settlement already exist - choose a uniqe name");
                     else
-                        facilitiesOptions.push_back(FacilityType(facilityName,category,std::stoi(price),std::stoi(lifeQuality_score),std::stoi(economy_score),std::stoi(enviroment_Score)));
-                    }
+                        settlements.push_back(new Settlement(settlementName, settlementType));
+            }
 
-                    std::cout << "The simulation has started" << std::endl;
+            if (actionType=="Facility"){
+                const string &facilityName = arguments[1];
+                FacilityCategory category;
+                const string &price = arguments[3];
+                const string &lifeQuality_score = arguments[4];
+                const string &economy_score = arguments[5];
+                const string &enviroment_Score = arguments[6];
+
+                switch (stoi(arguments[2]))
+                {
+                case 0:
+                    category = FacilityCategory::LIFE_QUALITY;
+                    break;
+                case 1:
+                    category = FacilityCategory::ECONOMY;
+                    break;
+                case 2:
+                    category = FacilityCategory::ENVIRONMENT;
+                    break;
+                default:
+                    throw std::invalid_argument("Unkown facility category");
+                }
+
+                if(isFacilityExists(facilityName))
+                    throw std::invalid_argument("facility already exist - choose a uniqe name");
+                else
+                    facilitiesOptions.push_back(FacilityType(facilityName,category,std::stoi(price),std::stoi(lifeQuality_score),std::stoi(economy_score),std::stoi(enviroment_Score)));
+            }
+
+            std::cout << "The simulation has started" << std::endl;
+
+            while (isRunning)
+            {
+                
+      
             }
         }
         void Simulation::addPlan(){
