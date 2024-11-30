@@ -30,12 +30,12 @@ class Simulation{
         Simulation::Simulation(const string &configFilePath):isRunning(false),planCounter(0){}
 
         void Simulation::start(){// should print: "The simulation has started". should also start the loop of inputs from the user.
+        //all the initialziations from the configuration file should be added to the matching list field of this class
 
             open();//isRunning =true
 
             while (isRunning)
             {
-                BaseAction *action;
                 string command;
 
                 getline(std::cin, command);
@@ -58,19 +58,15 @@ class Simulation{
                         selection=new SustainabilitySelection();
 
                     if(!isSettlementExists(settlementName))
-                        std::cout << "settlement does not exist" << std::endl;
+                        throw std::invalid_argument("the settlement does not exist");
                     else{
-
-                    action = new AddPlan(settlementName, arguments[2]);
-
-                    actionsLog.push_back(action);
-                    planCounter++;
-                    plans.push_back(Plan(planCounter, getSettlement(settlementName), selection, facilitiesOptions));
+                        planCounter++;
+                        plans.push_back(Plan(planCounter, getSettlement(settlementName), selection, facilitiesOptions));
                     }
                 }
 
                 if (actionType=="settlement"){
-                    const string &selttlementName = arguments[1];
+                    const string &settlementName = arguments[1];
                     SettlementType settlementType;
                     switch(stoi(arguments[2])){
                         case 0:
@@ -86,9 +82,10 @@ class Simulation{
                             throw std::invalid_argument("Unkown settlement type");
                         }
 
-                        action = new AddSettlement(selttlementName, settlementType);
-                        actionsLog.push_back(action);
-                        settlements.push_back(new Settlement(selttlementName, settlementType));
+                        if(isSettlementExists(settlementName))
+                            throw std::invalid_argument("the settlement already exist - choose a uniqe name");
+                        else
+                            settlements.push_back(new Settlement(settlementName, settlementType));
                 }
 
                 if (actionType=="Facility"){
@@ -114,9 +111,10 @@ class Simulation{
                         throw std::invalid_argument("Unkown facility category");
                     }
 
-                    action = new AddFacility(facilityName, category, std::stoi(price), std::stoi(lifeQuality_score), std::stoi(economy_score), std::stoi(enviroment_Score));
-                    actionsLog.push_back(action);
-                    facilitiesOptions.push_back(FacilityType(facilityName,category,std::stoi(price),std::stoi(lifeQuality_score),std::stoi(economy_score),std::stoi(enviroment_Score)));
+                    if(isFacilityExists(facilityName))
+                        throw std::invalid_argument("facility already exist - choose a uniqe name");
+                    else
+                        facilitiesOptions.push_back(FacilityType(facilityName,category,std::stoi(price),std::stoi(lifeQuality_score),std::stoi(economy_score),std::stoi(enviroment_Score)));
                     }
 
                     std::cout << "The simulation has started" << std::endl;
@@ -137,6 +135,9 @@ class Simulation{
         bool Simulation::isSettlementExists(const string &settlementName){
 
         }
+
+        bool Simulation::isFacilityExists(const string &facilityName){}
+
         Settlement &Simulation::getSettlement(const string &settlementName){
             for(auto &settlement:settlements){
                 if (settlement->getName()==settlementName)
