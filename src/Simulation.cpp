@@ -171,9 +171,9 @@ class Simulation{
         {
             actionsLog.push_back(action);
         }
-        
-        bool Simulation::addSettlement(Settlement *settlement){
 
+        bool Simulation::addSettlement(Settlement *settlement){
+            settlements.push_back(settlement);
         }
         bool Simulation::addFacility(FacilityType facility){
 
