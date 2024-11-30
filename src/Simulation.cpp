@@ -129,11 +129,11 @@ class Simulation{
             }
         }
 
-        void Simulation::addPlan(){
-
+        void Simulation::addPlan(const Settlement &settlement, SelectionPolicy *selectionPolicy)
+        {
         }
-        void Simulation::addAction(){
-
+        void Simulation::addAction(BaseAction *action)
+        {
         }
         bool Simulation::addSettlement(Settlement *settlement){
 
