@@ -36,6 +36,8 @@ class Simulation{
 
             while (isRunning)
             {
+                //analyziation of the user input
+
                 string command;
 
                 getline(std::cin, command);
@@ -169,7 +171,7 @@ class Simulation{
         }
 
         void Simulation::close(){
-
+            isRunning = false;
         }
         void Simulation::open(){
             isRunning = true;
