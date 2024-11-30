@@ -145,16 +145,19 @@ class Simulation{
             }
         }
 
-
         Plan &Simulation::getPlan(const int planID){
             for(auto &plan:plans)
                 if(plan.getID()==planID)
                     return plan;
         }
 
-        void Simulation::step(){
-
+        void Simulation::step(){//should iterate over all plans and perform step for each of them
+        //in the action class, this method will be performed as many times as the user decides
+            for (auto plan :plans){
+                plan.step();
+            }
         }
+
         void Simulation::close(){
 
         }
