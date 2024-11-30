@@ -136,7 +136,13 @@ class Simulation{
 
         }
 
-        bool Simulation::isFacilityExists(const string &facilityName){}
+        bool Simulation::isFacilityExists(const string &facilityName){
+            for (auto &facility:facilitiesOptions){
+                if(facility.getName()==facilityName)
+                    return true;
+            }
+            return false;
+        }
 
         Settlement &Simulation::getSettlement(const string &settlementName){
             for(auto &settlement:settlements){
