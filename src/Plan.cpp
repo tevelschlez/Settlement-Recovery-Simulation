@@ -12,7 +12,7 @@ class Plan {
         //in this class there is a need to implement the 'Rule Of 5": destructor, copy constructor, copy assignment operator, move constructor, move assignment operator
 
         //need to initialize the scores to be 0
-        Plan::Plan(const int planId, const Settlement &settlement, SelectionPolicy *selectionPolicy, const vector<FacilityType> &facilityOptions) : plan_id(planId), settlement(settlement), selectionPolicy(selectionPolicy), facilityOptions(facilityOptions),status(PlanStatus::AVALIABLE),life_quality_score(0),economy_score(0),environment_score(0){}
+        Plan::Plan(const int planId, const Settlement &settlement, SelectionPolicy *selectionPolicy, const vector<FacilityType> &facilityOptions) : plan_id(planId), settlement(settlement), selectionPolicy(selectionPolicy), facilityOptions(facilityOptions),status(PlanStatus::AVALIABLE),life_quality_score(0),economy_score(0),environment_score(0),constructionLimit(getConstructionLimit()){}
 
 
 
@@ -88,7 +88,7 @@ class Plan {
                 underConstruction.push_back(facility);
             else if (facility->getStatus()==FacilityStatus::UNDER_CONSTRUCTIONS&& underConstruction.size()==getConstructionLimit())
                 std::cout << "cannot add this facility to the under construction list" << std::endl;
-                
+
             else
                 facilities.push_back(facility);
 
@@ -156,4 +156,5 @@ class Plan {
         vector<Facility*> underConstruction;
         const vector<FacilityType> &facilityOptions;
         int life_quality_score, economy_score, environment_score;
+        const int constructionLimit;
 };
