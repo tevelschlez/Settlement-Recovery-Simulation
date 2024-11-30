@@ -181,6 +181,8 @@ class Simulation{
         }
 
         void Simulation::step(){
+            for(auto &plan:plans)
+                plan.step();
 
         }
         void Simulation::close(){
