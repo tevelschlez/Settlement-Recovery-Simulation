@@ -24,6 +24,8 @@ class Plan {
         const string toString() const;
         void activateSelectionPolicy();
 
+        const int getID();
+
         //rule of 5:
         ~Plan();//destructors
         Plan(Plan &other);//copy constructor
@@ -38,4 +40,7 @@ class Plan {
         vector<Facility*> underConstruction;
         const vector<FacilityType> &facilityOptions;
         int life_quality_score, economy_score, environment_score;
+        const int constructionLimit;
+        const int getConstructionLimit();
+
 };
