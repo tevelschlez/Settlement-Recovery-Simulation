@@ -63,11 +63,8 @@ class Simulation{
                     else if (arguments[2]=="env")
                         selection=new SustainabilitySelection();
 
-                    if(!isSettlementExists(settlementName))
-                        throw std::invalid_argument("the settlement does not exist");
-                 else{
                      action = new AddPlan(settlementName, arguments[2]);
-                 }
+                 
               }
 
                 if (actionType=="settlement"){
@@ -86,13 +83,9 @@ class Simulation{
                         default:
                             throw std::invalid_argument("Unkown settlement type");
                         }
-
-                        if(isSettlementExists(settlementName))
-                            throw std::invalid_argument("the settlement already exist - choose a uniqe name");
-                        else{
                             action = new AddSettlement(settlementName,settlementType);
-                        }
-                                }
+                        
+                }
 
                 if (actionType=="Facility"){
                     const string &facilityName = arguments[1];
@@ -117,11 +110,8 @@ class Simulation{
                         throw std::invalid_argument("Unkown facility category");
                     }
 
-                    if(isFacilityExists(facilityName))
-                        throw std::invalid_argument("facility already exist - choose a uniqe name");
-                    else{
                         action = new AddFacility(facilityName, category, price, lifeQuality_score, economy_score, enviroment_Score);
-                    }
+                
                 }
 
                 if(actionType =="step"){
@@ -163,8 +153,12 @@ class Simulation{
 
         void Simulation::addPlan(const Settlement &settlement, SelectionPolicy *selectionPolicy)
         {
-            planCounter++;
-            plans.push_back(Plan(planCounter, settlement, selectionPolicy, facilitiesOptions));
+            if(!isSettlementExists)
+                std::cout << "settlement does not exist"<<std::endl;
+            else{
+                planCounter++;
+                plans.push_back(Plan(planCounter, settlement, selectionPolicy, facilitiesOptions));
+            }
         }
 
         void Simulation::addAction(BaseAction *action)
@@ -173,13 +167,19 @@ class Simulation{
         }
 
         bool Simulation::addSettlement(Settlement *settlement){
-            settlements.push_back(settlement);
+            if(isSettlementExists)
+                std::cout << "settlement already exist - choose a uniuqe name";
+            else
+                settlements.push_back(settlement);
         }
 
         bool Simulation::addFacility(FacilityType facility){
-            facilitiesOptions.push_back(facility);
+            if (isFacilityExists)
+                std::cout << "facility already exist - choose a uniuqe name";
+            else
+              facilitiesOptions.push_back(facility);
         }
-        
+
         bool Simulation::isSettlementExists(const string &settlementName){
             for(auto &settlement:settlements){
                 if(settlement->getName()==settlementName)
