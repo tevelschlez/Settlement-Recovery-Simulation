@@ -5,24 +5,12 @@
 
 class BaseAction{
     public:
-        BaseAction(){
-
-        }
-        ActionStatus getStatus() const{
-
-        }
-        virtual void act(Simulation& simulation){
-
-        }
-        virtual const string toString() const{
-
-        }
-        virtual BaseAction* clone() const {
-
-        }
-        virtual ~BaseAction() {
-
-        }
+        BaseAction(){}
+        ActionStatus getStatus() const{}
+        virtual void act(Simulation& simulation){}
+        virtual const string toString() const{}
+        virtual BaseAction* clone() const {}
+        virtual ~BaseAction() { }
 
     protected:
         void complete();
@@ -37,7 +25,7 @@ class BaseAction{
 class SimulateStep : public BaseAction {
 
     public:
-        SimulateStep(const int numOfSteps){
+        SimulateStep::SimulateStep(const int numOfSteps):numOfSteps(numOfSteps){
 
         }
         void act(Simulation &simulation) override{
@@ -55,7 +43,7 @@ class SimulateStep : public BaseAction {
 
 class AddPlan : public BaseAction {
     public:
-        AddPlan(const string &settlementName, const string &selectionPolicy){
+        AddPlan::AddPlan(const string &settlementName, const string &selectionPolicy):settlementName(settlementName),selectionPolicy(selectionPolicy){
 
         }
         void act(Simulation &simulation) override{
@@ -75,7 +63,7 @@ class AddPlan : public BaseAction {
 
 class AddSettlement : public BaseAction {
     public:
-        AddSettlement(const string &settlementName,SettlementType settlementType){
+        AddSettlement::AddSettlement(const string &settlementName,SettlementType settlementType):settlementName(settlementName),settlementType(settlementType){
 
         }
         void act(Simulation &simulation) override{
@@ -97,7 +85,7 @@ class AddSettlement : public BaseAction {
 
 class AddFacility : public BaseAction {
     public:
-        AddFacility(const string &facilityName, const FacilityCategory facilityCategory, const int price, const int lifeQualityScore, const int economyScore, const int environmentScore){
+        AddFacility::AddFacility(const string &facilityName, const FacilityCategory facilityCategory, const int price, const int lifeQualityScore, const int economyScore, const int environmentScore):facilityName(facilityName),facilityCategory(facilityCategory),price(price),lifeQualityScore(lifeQualityScore),economyScore(economyScore),environmentScore(environmentScore){
 
         }
         void act(Simulation &simulation) override{
@@ -121,7 +109,7 @@ class AddFacility : public BaseAction {
 
 class PrintPlanStatus: public BaseAction {
     public:
-        PrintPlanStatus(int planId){
+        PrintPlanStatus::PrintPlanStatus(int planId):planId(planId){
 
         }
         void act(Simulation &simulation) override{
@@ -140,7 +128,7 @@ class PrintPlanStatus: public BaseAction {
 
 class ChangePlanPolicy : public BaseAction {
     public:
-        ChangePlanPolicy(const int planId, const string &newPolicy){
+        ChangePlanPolicy::ChangePlanPolicy(const int planId, const string &newPolicy):planId(planId),newPolicy(newPolicy){
 
         }
         void act(Simulation &simulation) override{
@@ -160,9 +148,7 @@ class ChangePlanPolicy : public BaseAction {
 
 class PrintActionsLog : public BaseAction {
     public:
-        PrintActionsLog(){
-
-        }
+        PrintActionsLog::PrintActionsLog(){}
         void act(Simulation &simulation) override{
 
         }
@@ -177,7 +163,7 @@ class PrintActionsLog : public BaseAction {
 
 class Close : public BaseAction {
     public:
-        Close(){
+        Close::Close(){
 
         }
         void act(Simulation &simulation) override{
@@ -194,9 +180,7 @@ class Close : public BaseAction {
 
 class BackupSimulation : public BaseAction {
     public:
-        BackupSimulation(){
-
-        }
+        BackupSimulation::BackupSimulation(){}
         void act(Simulation &simulation) override{
 
         }
@@ -212,9 +196,7 @@ class BackupSimulation : public BaseAction {
 
 class RestoreSimulation : public BaseAction {
     public:
-        RestoreSimulation(){
-
-        }
+        RestoreSimulation::RestoreSimulation(){}
         void act(Simulation &simulation) override{
 
         }
