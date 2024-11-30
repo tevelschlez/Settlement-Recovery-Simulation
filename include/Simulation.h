@@ -4,6 +4,7 @@
 #include "Facility.h"
 #include "Plan.h"
 #include "Settlement.h"
+#include <fstream>
 using std::string;
 using std::vector;
 
@@ -13,12 +14,14 @@ class SelectionPolicy;
 class Simulation {
     public:
         Simulation(const string &configFilePath);
+        void loadConfigFile(const string &configFilePath);
         void start();
         void addPlan(const Settlement &settlement, SelectionPolicy *selectionPolicy);
         void addAction(BaseAction *action);
         bool addSettlement(Settlement *settlement);
         bool addFacility(FacilityType facility);
         bool isSettlementExists(const string &settlementName);
+        bool isFacilityExists(const string &facilityName);
         Settlement &getSettlement(const string &settlementName);
         Plan &getPlan(const int planID);
         void step();

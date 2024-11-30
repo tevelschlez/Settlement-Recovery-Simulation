@@ -26,78 +26,69 @@ class Simulation{
         vector<FacilityType> facilitiesOptions;
 
     public:
+        Simulation::Simulation(const string &configFilePath) : isRunning(false), planCounter(0) { loadConfigFile(configFilePath); }
 
-        Simulation::Simulation(const string &configFilePath):isRunning(false),planCounter(0){}
+        void Simulation::loadConfigFile(const string &configFilePath){
+            std::ifstream configFile(configFilePath);
 
-        void Simulation::start(){// should print: "The simulation has started". should also start the loop of inputs from the user.
-
-            open();//isRunning =true
-
-            while (isRunning)
+            if (!configFile.is_open())
             {
-                BaseAction *action;
-                string command;
+                std::cout << "ERROR - opening config file failed: " << configFilePath << std::endl;
+                return;
+            }
 
-                getline(std::cin, command);
+            string line;
+            while(std::getline(configFile,line)){
+                vector<string> arguments = Auxiliary::parseArguments(line);
 
-                vector<string> arguments = Auxiliary::parseArguments(command);
+                const string &initializerType = arguments[0];
 
-                const string &actionType = arguments[0];
-
-                if(actionType=="Plan"){
+                if (initializerType == "Plan")
+                {
                     const string &settlementName = arguments[1];
                     SelectionPolicy *selection;
 
-                    if(arguments[2]=="nve")
+                    if (arguments[2] == "nve")
                         selection = new NaiveSelection();
-                    else if (arguments[2]=="bal")
-                        selection = new BalancedSelection(0,0,0);
-                    else if (arguments[2]=="eco")
+                    else if (arguments[2] == "bal")
+                        selection = new BalancedSelection(0, 0, 0);
+                    else if (arguments[2] == "eco")
                         selection = new EconomySelection();
-                    else if (arguments[2]=="env")
-                        selection=new SustainabilitySelection();
+                    else if (arguments[2] == "env")
+                        selection = new SustainabilitySelection();
 
-                    if(!isSettlementExists(settlementName))
-                        std::cout << "settlement does not exist" << std::endl;
-                    else{
-
-                    action = new AddPlan(settlementName, arguments[2]);
-
-                    actionsLog.push_back(action);
-                    planCounter++;
-                    plans.push_back(Plan(planCounter, getSettlement(settlementName), selection, facilitiesOptions));
-                    }
+                    addPlan(getSettlement(settlementName), selection);
                 }
 
-                if (actionType=="settlement"){
-                    const string &selttlementName = arguments[1];
+                if (initializerType == "settlement")
+                {
+                    const string &settlementName = arguments[1];
                     SettlementType settlementType;
-                    switch(stoi(arguments[2])){
-                        case 0:
-                            settlementType = SettlementType::VILLAGE;
-                            break;
-                        case 1:
-                            settlementType = SettlementType::CITY;
-                            break;
-                        case 2:
-                            settlementType = SettlementType::METROPOLIS;
-                            break;
-                        default:
-                            throw std::invalid_argument("Unkown settlement type");
-                        }
-
-                        action = new AddSettlement(selttlementName, settlementType);
-                        actionsLog.push_back(action);
-                        settlements.push_back(new Settlement(selttlementName, settlementType));
+                    switch (stoi(arguments[2]))
+                    {
+                    case 0:
+                        settlementType = SettlementType::VILLAGE;
+                        break;
+                    case 1:
+                        settlementType = SettlementType::CITY;
+                        break;
+                    case 2:
+                        settlementType = SettlementType::METROPOLIS;
+                        break;
+                    default:
+                        throw std::invalid_argument("Unkown settlement type");
+                    }
+                    addSettlement(new Settlement(settlementName, settlementType));
                 }
 
-                if (actionType=="Facility"){
+                if (initializerType == "Facility")
+                {
                     const string &facilityName = arguments[1];
                     FacilityCategory category;
-                    const string &price = arguments[3];
-                    const string &lifeQuality_score = arguments[4];
-                    const string &economy_score = arguments[5];
-                    const string &enviroment_Score = arguments[6];
+                    const int &price = stoi(arguments[3]);
+                    const int &lifeQuality_score = stoi(arguments[4]);
+                    const int &economy_score = stoi(arguments[5]);
+                    const int &enviroment_Score = stoi(arguments[6]);
 
                     switch (stoi(arguments[2]))
                     {
@@ -114,29 +105,178 @@ class Simulation{
                         throw std::invalid_argument("Unkown facility category");
                     }
 
-                    action = new AddFacility(facilityName, category, std::stoi(price), std::stoi(lifeQuality_score), std::stoi(economy_score), std::stoi(enviroment_Score));
-                    actionsLog.push_back(action);
-                    facilitiesOptions.push_back(FacilityType(facilityName,category,std::stoi(price),std::stoi(lifeQuality_score),std::stoi(economy_score),std::stoi(enviroment_Score)));
+                    addFacility(FacilityType(facilityName, category, price, lifeQuality_score, economy_score, enviroment_Score));
+                }
+            }
+
+            configFile.close();
+        }
+
+        void Simulation::start(){// should print: "The simulation has started". should also start the loop of inputs from the user.
+            open();//isRunning =true
+            string command;
+            std::cout << "The simulation has started" << std::endl;
+
+
+            while (isRunning)
+            {
+                //analyziation of the user input
+
+                string command;
+
+                getline(std::cin, command);
+                BaseAction *action;
+
+                vector<string> arguments = Auxiliary::parseArguments(command);
+
+                const string &actionType = arguments[0];
+
+                if(actionType=="Plan"){
+                 const string &settlementName = arguments[1];
+                    SelectionPolicy *selection;
+
+                    if(arguments[2]=="nve")
+                        selection = new NaiveSelection();
+                    else if (arguments[2]=="bal")
+                        selection = new BalancedSelection(0,0,0);
+                  else if (arguments[2]=="eco")
+                        selection = new EconomySelection();
+                    else if (arguments[2]=="env")
+                        selection=new SustainabilitySelection();
+
+                     action = new AddPlan(settlementName, arguments[2]);
+                 
+              }
+
+                if (actionType=="settlement"){
+                    const string &settlementName = arguments[1];
+                    SettlementType settlementType;
+                    switch(stoi(arguments[2])){
+                        case 0:
+                            settlementType = SettlementType::VILLAGE;
+                            break;
+                        case 1:
+                            settlementType = SettlementType::CITY;
+                            break;
+                        case 2:
+                            settlementType = SettlementType::METROPOLIS;
+                            break;
+                        default:
+                            throw std::invalid_argument("Unkown settlement type");
+                        }
+                            action = new AddSettlement(settlementName,settlementType);
+                        
+                }
+
+                if (actionType=="Facility"){
+                    const string &facilityName = arguments[1];
+                    FacilityCategory category;
+                    const int &price = stoi(arguments[3]);
+                    const int &lifeQuality_score = stoi(arguments[4]);
+                    const int &economy_score = stoi(arguments[5]);
+                    const int &enviroment_Score = stoi(arguments[6]);
+
+                    switch (stoi(arguments[2]))
+                    {
+                    case 0:
+                        category = FacilityCategory::LIFE_QUALITY;
+                        break;
+                    case 1:
+                        category = FacilityCategory::ECONOMY;
+                        break;
+                    case 2:
+                        category = FacilityCategory::ENVIRONMENT;
+                        break;
+                    default:
+                        throw std::invalid_argument("Unkown facility category");
                     }
 
-                    std::cout << "The simulation has started" << std::endl;
+                        action = new AddFacility(facilityName, category, price, lifeQuality_score, economy_score, enviroment_Score);
+                
+                }
+
+                if(actionType =="step"){
+                    const int &num_of_steps = stoi(arguments[1]);
+                    action = new SimulateStep(num_of_steps);
+                }
+
+                if(actionType=="planStatus"){
+                    const int &plan_id = stoi(arguments[1]);
+                    action = new PrintPlanStatus(plan_id);
+                }
+
+                if(actionType=="changePolicy"){
+                    const int &plan_id = stoi(arguments[1]);
+                    const string &policy = arguments[2];
+
+                    action = new ChangePlanPolicy(plan_id,policy);
+                }
+
+                if(actionType=="log"){
+                    action = new PrintActionsLog();
+                }
+
+                if(actionType=="close"){
+                    action = new Close();
+                }
+
+                if(actionType=="backup"){
+                    action = new BackupSimulation();
+                }
+
+                if(actionType=="restore"){
+                    action = new RestoreSimulation();
+                }
+
+                action->act(*this);
             }
         }
-        void Simulation::addPlan(){
 
+        void Simulation::addPlan(const Settlement &settlement, SelectionPolicy *selectionPolicy)
+        {
+            if(!isSettlementExists)
+                std::cout << "settlement does not exist"<<std::endl;
+            else{
+                planCounter++;
+                plans.push_back(Plan(planCounter, settlement, selectionPolicy, facilitiesOptions));
+            }
         }
-        void Simulation::addAction(){
 
+        void Simulation::addAction(BaseAction *action)
+        {
+            actionsLog.push_back(action);
         }
+
         bool Simulation::addSettlement(Settlement *settlement){
-
+            if(isSettlementExists)
+                std::cout << "settlement already exist - choose a uniuqe name";
+            else
+                settlements.push_back(settlement);
         }
+
         bool Simulation::addFacility(FacilityType facility){
-
+            if (isFacilityExists)
+                std::cout << "facility already exist - choose a uniuqe name";
+            else
+              facilitiesOptions.push_back(facility);
         }
+
         bool Simulation::isSettlementExists(const string &settlementName){
-
+            for(auto &settlement:settlements){
+                if(settlement->getName()==settlementName)
+                    return true;
+            }
+            return false;
         }
+
+        bool Simulation::isFacilityExists(const string &facilityName){
+            for (auto &facility:facilitiesOptions){
+                if(facility.getName()==facilityName)
+                    return true;
+            }
+            return false;
+        }
+
         Settlement &Simulation::getSettlement(const string &settlementName){
             for(auto &settlement:settlements){
                 if (settlement->getName()==settlementName)
@@ -144,18 +284,21 @@ class Simulation{
             }
         }
 
-
         Plan &Simulation::getPlan(const int planID){
             for(auto &plan:plans)
                 if(plan.getID()==planID)
                     return plan;
         }
 
-        void Simulation::step(){
-
+        void Simulation::step(){//should iterate over all plans and perform step for each of them
+        //in the action class, this method will be performed as many times as the user decides
+            for (auto plan :plans){
+                plan.step();
+            }
         }
-        void Simulation::close(){
 
+        void Simulation::close(){
+            isRunning = false;
         }
         void Simulation::open(){
             isRunning = true;
