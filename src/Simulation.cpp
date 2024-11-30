@@ -26,9 +26,90 @@ class Simulation{
         vector<FacilityType> facilitiesOptions;
 
     public:
+        Simulation::Simulation(const string &configFilePath) : isRunning(false), planCounter(0) { loadConfigFile(configFilePath); }
 
-        Simulation::Simulation(const string &configFilePath):isRunning(false),planCounter(0){
+        void Simulation::loadConfigFile(const string &configFilePath){
+            std::ifstream configFile(configFilePath);
 
+            if (!configFile.is_open())
+            {
+                std::cout << "ERROR - opening config file failed: " << configFilePath << std::endl;
+                return;
+            }
+
+            string line;
+            while(std::getline(configFile,line)){
+                vector<string> arguments = Auxiliary::parseArguments(line);
+
+                const string &initializerType = arguments[0];
+
+                if (initializerType == "Plan")
+                {
+                    const string &settlementName = arguments[1];
+                    SelectionPolicy *selection;
+
+                    if (arguments[2] == "nve")
+                        selection = new NaiveSelection();
+                    else if (arguments[2] == "bal")
+                        selection = new BalancedSelection(0, 0, 0);
+                    else if (arguments[2] == "eco")
+                        selection = new EconomySelection();
+                    else if (arguments[2] == "env")
+                        selection = new SustainabilitySelection();
+
+                    addPlan(getSettlement(settlementName), selection);
+                }
+
+                if (initializerType == "settlement")
+                {
+                    const string &settlementName = arguments[1];
+                    SettlementType settlementType;
+                    switch (stoi(arguments[2]))
+                    {
+                    case 0:
+                        settlementType = SettlementType::VILLAGE;
+                        break;
+                    case 1:
+                        settlementType = SettlementType::CITY;
+                        break;
+                    case 2:
+                        settlementType = SettlementType::METROPOLIS;
+                        break;
+                    default:
+                        throw std::invalid_argument("Unkown settlement type");
+                    }
+                    addSettlement(new Settlement(settlementName, settlementType));
+                }
+
+                if (initializerType == "Facility")
+                {
+                    const string &facilityName = arguments[1];
+                    FacilityCategory category;
+                    const int &price = stoi(arguments[3]);
+                    const int &lifeQuality_score = stoi(arguments[4]);
+                    const int &economy_score = stoi(arguments[5]);
+                    const int &enviroment_Score = stoi(arguments[6]);
+
+                    switch (stoi(arguments[2]))
+                    {
+                    case 0:
+                        category = FacilityCategory::LIFE_QUALITY;
+                        break;
+                    case 1:
+                        category = FacilityCategory::ECONOMY;
+                        break;
+                    case 2:
+                        category = FacilityCategory::ENVIRONMENT;
+                        break;
+                    default:
+                        throw std::invalid_argument("Unkown facility category");
+                    }
+
+                    addFacility(FacilityType(facilityName, category, price, lifeQuality_score, economy_score, enviroment_Score));
+                }
+            }
+
+            configFile.close();
         }
 
         void Simulation::start(){// should print: "The simulation has started". should also start the loop of inputs from the user.
