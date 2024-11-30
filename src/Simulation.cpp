@@ -67,7 +67,6 @@ class Simulation{
                         throw std::invalid_argument("the settlement does not exist");
                  else{
                      action = new AddPlan(settlementName, arguments[2]);
-                     //whats the add plan method should do? it soes not get any parameters
                  }
               }
 
@@ -92,7 +91,6 @@ class Simulation{
                             throw std::invalid_argument("the settlement already exist - choose a uniqe name");
                         else{
                             action = new AddSettlement(settlementName,settlementType);
-                            action->act(*this);
                         }
                                 }
 
@@ -123,9 +121,43 @@ class Simulation{
                         throw std::invalid_argument("facility already exist - choose a uniqe name");
                     else{
                         action = new AddFacility(facilityName, category, price, lifeQuality_score, economy_score, enviroment_Score);
-                        action->act(*this);
                     }
                 }
+
+                if(actionType =="step"){
+                    const int &num_of_steps = stoi(arguments[1]);
+                    action = new SimulateStep(num_of_steps);
+                }
+
+                if(actionType=="planStatus"){
+                    const int &plan_id = stoi(arguments[1]);
+                    action = new PrintPlanStatus(plan_id);
+                }
+
+                if(actionType=="changePolicy"){
+                    const int &plan_id = stoi(arguments[1]);
+                    const string &policy = arguments[2];
+
+                    action = new ChangePlanPolicy(plan_id,policy);
+                }
+
+                if(actionType=="log"){
+                    action = new PrintActionsLog();
+                }
+
+                if(actionType=="close"){
+                    action = new Close();
+                }
+
+                if(actionType=="backup"){
+                    action = new BackupSimulation();
+                }
+
+                if(actionType=="restore"){
+                    action = new RestoreSimulation();
+                }
+
+                action->act(*this);
             }
         }
 
