@@ -25,7 +25,8 @@ class NaiveSelection: public SelectionPolicy {
         const string NaiveSelection:: toString() const {
             return "Naive Selection";
         }
-        NaiveSelection * NaiveSelection:: clone() const {
+        NaiveSelection* NaiveSelection:: clone() const {
+            return new NaiveSelection(*this);
 
         }
         NaiveSelection::~NaiveSelection()  {
@@ -40,6 +41,7 @@ class BalancedSelection: public SelectionPolicy {
         BalancedSelection::BalancedSelection(int LifeQualityScore, int EconomyScore, int EnvironmentScore):LifeQualityScore(LifeQualityScore),EconomyScore(EconomyScore),EnvironmentScore(EnvironmentScore){}
 
         const FacilityType& BalancedSelection:: selectFacility(const vector<FacilityType>& facilitiesOptions) {
+
             int index=0;
 
             int sum_lifeQuality=LifeQualityScore+facilitiesOptions[0].getLifeQualityScore();
@@ -101,6 +103,7 @@ class BalancedSelection: public SelectionPolicy {
             return "Balanced Selection";
         }
         BalancedSelection * BalancedSelection:: clone() const {
+            return new BalancedSelection(*this);
 
         }
         BalancedSelection::~BalancedSelection()  {
@@ -114,19 +117,19 @@ class BalancedSelection: public SelectionPolicy {
 
 class EconomySelection: public SelectionPolicy {
     public:
-        EconomySelection::EconomySelection(){lastSelectedIndex=-1;}
+        EconomySelection::EconomySelection() : lastSelectedIndex(-1) {}
 
         const FacilityType& EconomySelection:: selectFacility(const vector<FacilityType>& facilitiesOptions) {
+
             if(lastSelectedIndex==facilitiesOptions.size()-1)
                 lastSelectedIndex=-1;
 
             bool isFound=false;
-
-            for(int i=lastSelectedIndex+1; !isFound ;i++){
-                i=(i%facilitiesOptions.size());
+            for(int i = lastSelectedIndex + 1; !isFound ; i++){
+                i = ( i % facilitiesOptions.size());
 
                 if(facilitiesOptions[i].getCategory()==FacilityCategory::ECONOMY){
-                    lastSelectedIndex=i;
+                    lastSelectedIndex = i;
                     return facilitiesOptions[i];
                 }
             }
@@ -136,6 +139,7 @@ class EconomySelection: public SelectionPolicy {
             return "Economy Selection";
         }
         EconomySelection *EconomySelection::clone() const {
+            return new EconomySelection(*this);
 
         }
         EconomySelection::~EconomySelection()  {
@@ -158,10 +162,10 @@ class SustainabilitySelection: public SelectionPolicy {
             bool isFound=false;
 
             for(int i=lastSelectedIndex+1; !isFound ;i++){
-                i=(i%facilitiesOptions.size());
+                i = (i % facilitiesOptions.size());
 
                 if(facilitiesOptions[i].getCategory()==FacilityCategory::ENVIRONMENT){
-                    lastSelectedIndex=i;
+                    lastSelectedIndex = i;
                     return facilitiesOptions[i];
                 }
             }
@@ -171,10 +175,10 @@ class SustainabilitySelection: public SelectionPolicy {
         }
 
         SustainabilitySelection *SustainabilitySelection::clone() const {
+            return new SustainabilitySelection(*this);
 
         }
         SustainabilitySelection::~SustainabilitySelection()  {
-
         }
     private:
         int lastSelectedIndex;

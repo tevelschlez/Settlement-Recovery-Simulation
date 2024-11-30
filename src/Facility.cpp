@@ -6,99 +6,82 @@
 using std::string;
 using std::vector;
 
-class FacilityType {
-    public:
-        FacilityType::FacilityType(const string &name, const FacilityCategory category, const int price, const int lifeQuality_score, const int economy_score, const int environment_score):name(name),category(category),price(price),lifeQuality_score(lifeQuality_score),economy_score(economy_score),environment_score(environment_score){}
 
-        const string &FacilityType::getName() const{
-            return name;
-        }
+FacilityType::FacilityType(const string &name, const FacilityCategory category, const int price, const int lifeQuality_score, const int economy_score, const int environment_score)
+    : name(name), category(category), price(price), lifeQuality_score(lifeQuality_score), economy_score(economy_score), environment_score(environment_score) {}
 
-        int FacilityType::getCost() const{
-            return price;
-        }
-        int FacilityType::getLifeQualityScore() const{
-            return lifeQuality_score;
-        }
-        int FacilityType::getEnvironmentScore() const{
-            return environment_score;
-        }
-        int FacilityType::getEconomyScore() const{
-            return economy_score;
-        }
+const string &FacilityType::getName() const {
+    return name;
+}
 
-        FacilityCategory FacilityType::getCategory() const{
-            return category;
-        }
+int FacilityType::getCost() const {
+    return price;
+}
 
-    protected:
-        const string name;
-        const FacilityCategory category;
-        const int price;
-        const int lifeQuality_score;
-        const int economy_score;
-        const int environment_score;
-};
+int FacilityType::getLifeQualityScore() const {
+    return lifeQuality_score;
+}
 
+int FacilityType::getEnvironmentScore() const {
+    return environment_score;
+}
 
+int FacilityType::getEconomyScore() const {
+    return economy_score;
+}
 
-class Facility: public FacilityType {
+FacilityCategory FacilityType::getCategory() const {
+    return category;
+}
 
-    public:
-        Facility::Facility(const string &name, const string &settlementName, const FacilityCategory category, const int price, const int lifeQuality_score, const int economy_score, const int environment_score):FacilityType(name,category,price,lifeQuality_score,economy_score,environment_score),settlementName(settlementName),status(FacilityStatus::UNDER_CONSTRUCTIONS),timeLeft(price){
-        }
+Facility::Facility(const string &name, const string &settlementName, const FacilityCategory category, const int price, const int lifeQuality_score, const int economy_score, const int environment_score)
+    : FacilityType(name, category, price, lifeQuality_score, economy_score, environment_score), settlementName(settlementName), status(FacilityStatus::UNDER_CONSTRUCTIONS), timeLeft(price) {}
 
-        Facility::Facility(const FacilityType &type, const string &settlementName):FacilityType(type),settlementName(name),status(FacilityStatus::UNDER_CONSTRUCTIONS),timeLeft(price){
-        }
+Facility::Facility(const FacilityType &type, const string &settlementName)
+    : FacilityType(type), settlementName(settlementName), status(FacilityStatus::UNDER_CONSTRUCTIONS), timeLeft(type.getCost()) {}
 
-        const string &Facility::getSettlementName() const{
-            return settlementName;
-        }
+const string &Facility::getSettlementName() const {
+    return settlementName;
+}
 
-        const int Facility::getTimeLeft() const{
-            return timeLeft;
-        }
+const int Facility::getTimeLeft() const {
+    return timeLeft;
+}
 
-        FacilityStatus Facility::step(){
-            timeLeft--;
+FacilityStatus Facility::step() {
+    timeLeft--;
 
-            if(timeLeft==0)
-                status=FacilityStatus::OPERATIONAL;
-        }
+    if(timeLeft==0)
+        status=FacilityStatus::OPERATIONAL;
+}
 
-        void Facility::setStatus(FacilityStatus status){
-            this->status=status;
-        }
+void Facility::setStatus(FacilityStatus status) {
+    this->status = status;
+}
 
-        const FacilityStatus& Facility::getStatus() const{
-            return status;
-        }
+const FacilityStatus& Facility::getStatus() const {
+    return status;
+}
 
-        const string toString() const{
-            string str=name+" "+settlementName+" ";
+const string Facility::toString() const {
+    string str = getName() + " " + settlementName + " ";
 
-            if(category==FacilityCategory::ECONOMY)
-                str+="economy ";
-            else if (category == FacilityCategory::ENVIRONMENT)
-                str+="enviroment ";
-            else 
-                str+="life quality ";
+    if (getCategory() == FacilityCategory::ECONOMY)
+        str += "Economy ";
+    else if (getCategory() == FacilityCategory::ENVIRONMENT)
+        str += "Environment ";
+    else 
+        str += "Life quality ";
 
-            str+=std::to_string(price)+" life_quality_score:"+std::to_string(lifeQuality_score)+" economy_score:"+std::to_string(economy_score)+" enviroment_score:"+std::to_string(environment_score);
+    str += std::to_string(getCost()) + " life_quality_score:" + std::to_string(getLifeQualityScore()) + " economy_score:" + std::to_string(getEconomyScore()) + " environment_score:" + std::to_string(getEnvironmentScore());
 
-            if(status==FacilityStatus::OPERATIONAL)
-                str+="operational";
-            else    
-                str+="under_construction";
+    if (status == FacilityStatus::OPERATIONAL)
+        str += " Operational";
+    else    
+        str += " Under_construction";
 
-            str+=std::to_string(timeLeft);
+    str += " " + std::to_string(timeLeft);
 
-            return str;
-            
-        }
+    return str;
+}
 
-    private:
-        const string settlementName;
-        FacilityStatus status;
-        int timeLeft;
-};
