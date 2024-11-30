@@ -175,9 +175,11 @@ class Simulation{
         bool Simulation::addSettlement(Settlement *settlement){
             settlements.push_back(settlement);
         }
-        bool Simulation::addFacility(FacilityType facility){
 
+        bool Simulation::addFacility(FacilityType facility){
+            facilitiesOptions.push_back(facility);
         }
+        
         bool Simulation::isSettlementExists(const string &settlementName){
             for(auto &settlement:settlements){
                 if(settlement->getName()==settlementName)
