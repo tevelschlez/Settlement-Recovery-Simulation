@@ -163,10 +163,15 @@ class Simulation{
 
         void Simulation::addPlan(const Settlement &settlement, SelectionPolicy *selectionPolicy)
         {
+            planCounter++;
+            plans.push_back(Plan(planCounter, settlement, selectionPolicy, facilitiesOptions));
         }
+
         void Simulation::addAction(BaseAction *action)
         {
+            actionsLog.push_back(action);
         }
+        
         bool Simulation::addSettlement(Settlement *settlement){
 
         }
