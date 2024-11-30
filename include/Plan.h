@@ -25,7 +25,6 @@ class Plan {
         void activateSelectionPolicy();
 
         const int getID();
-        const int getConstructionLimit();
 
         //rule of 5:
         ~Plan();//destructors
@@ -42,4 +41,6 @@ class Plan {
         const vector<FacilityType> &facilityOptions;
         int life_quality_score, economy_score, environment_score;
         const int constructionLimit;
+        const int getConstructionLimit();
+
 };

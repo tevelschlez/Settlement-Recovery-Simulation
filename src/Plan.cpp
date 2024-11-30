@@ -15,32 +15,6 @@ class Plan {
         Plan::Plan(const int planId, const Settlement &settlement, SelectionPolicy *selectionPolicy, const vector<FacilityType> &facilityOptions) : plan_id(planId), settlement(settlement), selectionPolicy(selectionPolicy), facilityOptions(facilityOptions),status(PlanStatus::AVALIABLE),life_quality_score(0),economy_score(0),environment_score(0),constructionLimit(getConstructionLimit()){}
 
 
-
-        const int Plan::getConstructionLimit(){
-            int construcion_limit;
-            if (settlement.getType() == SettlementType::VILLAGE)
-                construcion_limit = 1;
-            if (settlement.getType() == SettlementType::CITY)
-                construcion_limit = 2;
-            if (settlement.getType() == SettlementType::METROPOLIS)
-                construcion_limit = 3;
-            return construcion_limit;
-        }
-
-        void Plan::activateSelectionPolicy(){//updating the plan scores according to the facilities that are chosen
-
-            Facility* f_to_push=new Facility(selectionPolicy->selectFacility(facilityOptions),settlement.getName());
-            underConstruction.push_back(f_to_push);
-            life_quality_score += f_to_push->getLifeQualityScore();
-            economy_score += f_to_push->getEconomyScore();
-            environment_score += f_to_push->getEnvironmentScore();
-
-            if(underConstruction.size()==getConstructionLimit())
-                status = PlanStatus::BUSY;
-            if(underConstruction.size()<getConstructionLimit())
-                status = PlanStatus::AVALIABLE;
-        }
-
         const int Plan::getlifeQualityScore() const{
             return life_quality_score;
         }
@@ -52,10 +26,24 @@ class Plan {
         }
 
         void Plan::setSelectionPolicy(SelectionPolicy *selectionPolicy) { this->selectionPolicy = selectionPolicy; }
+ 
 
+        void Plan::activateSelectionPolicy(){//choosing the next facility according to the selection polity and adding it to the under construction lst
+
+            Facility* f_to_add=new Facility(selectionPolicy->selectFacility(facilityOptions),settlement.getName());
+            addFacility(f_to_add);
+
+            if(underConstruction.size()==constructionLimit)
+                status = PlanStatus::BUSY;
+        }
 
         //if a facility is getting off from the under constructuion to the operational it meand there is a free spot to add to the list
         void step(){
+
+            while (status == PlanStatus::AVALIABLE)
+            {
+                activateSelectionPolicy();
+            }
 
             for( int i=0; i<underConstruction.size();i++){
                 underConstruction[i]->step();
@@ -63,13 +51,14 @@ class Plan {
                 if(underConstruction[i]->getStatus()==FacilityStatus::OPERATIONAL){
                     facilities.push_back(underConstruction[i]);
                     underConstruction.erase(underConstruction.begin() + i);
-                    while (status==PlanStatus::AVALIABLE)
-                        activateSelectionPolicy();
-
                     i=i-1;
+
+                    status == PlanStatus::AVALIABLE;
                 }
             }
         }
+
+
         void printStatus(){
             if(status==PlanStatus::AVALIABLE)
                 std::cout << "available" << std::endl;
@@ -84,9 +73,10 @@ class Plan {
         //if the length of underConstruction is equal to constuction_limit we can not add a plan
 
         void addFacility(Facility* facility){//update the plan scores according to the facility
-            if(facility->getStatus()==FacilityStatus::UNDER_CONSTRUCTIONS && underConstruction.size()<getConstructionLimit())
+            if(facility->getStatus()==FacilityStatus::UNDER_CONSTRUCTIONS && status==PlanStatus::AVALIABLE)
                 underConstruction.push_back(facility);
-            else if (facility->getStatus()==FacilityStatus::UNDER_CONSTRUCTIONS&& underConstruction.size()==getConstructionLimit())
+
+            else if (facility->getStatus()==FacilityStatus::UNDER_CONSTRUCTIONS&& status==PlanStatus::BUSY)
                 std::cout << "cannot add this facility to the under construction list" << std::endl;
 
             else
@@ -157,4 +147,14 @@ class Plan {
         const vector<FacilityType> &facilityOptions;
         int life_quality_score, economy_score, environment_score;
         const int constructionLimit;
+       const int Plan::getConstructionLimit(){
+            int construcion_limit;
+            if (settlement.getType() == SettlementType::VILLAGE)
+                construcion_limit = 1;
+            if (settlement.getType() == SettlementType::CITY)
+                construcion_limit = 2;
+            if (settlement.getType() == SettlementType::METROPOLIS)
+                construcion_limit = 3;
+            return construcion_limit;
+        }
 };
