@@ -75,26 +75,13 @@ class Facility: public FacilityType {
         }
 
         const string toString() const{
-            string str=name+" "+settlementName+" ";
-
-            if(category==FacilityCategory::ECONOMY)
-                str+="economy ";
-            else if (category == FacilityCategory::ENVIRONMENT)
-                str+="enviroment ";
-            else 
-                str+="life quality ";
-
-            str+=std::to_string(price)+" life_quality_score:"+std::to_string(lifeQuality_score)+" economy_score:"+std::to_string(economy_score)+" enviroment_score:"+std::to_string(environment_score);
-
+            string str = "FacilityName:" + name + "\n";
             if(status==FacilityStatus::OPERATIONAL)
-                str+="operational";
-            else    
-                str+="under_construction";
+                str += "OPERATIONAL\n";
+            if(status==FacilityStatus::UNDER_CONSTRUCTIONS)
+                str += "UNDER_CONSTRUCTION\n";
 
-           str+=std::to_string(timeLeft);
-
-           return str;
-            
+            return str;
         }
 
     private:

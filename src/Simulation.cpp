@@ -262,6 +262,15 @@ class Simulation{
             return false;
         }
 
+        bool Simulation::isPlanExists(const int &ID){
+            for (auto plan : plans)
+            {
+                if (plan.getID() == ID)
+                    return true;
+            }
+            return false;
+        }
+
 
          SelectionPolicy *Simulation::getSelectionPolicy(const string &policy){//returning null if the policy does not exist
              SelectionPolicy *selection;

@@ -88,26 +88,22 @@ class Plan {
         }
 
         const string toString() const{
-            string str = "plan id:" + std::to_string(plan_id) + " selection policy:" + selectionPolicy->toString();
+            string str = "PlanID:" + std::to_string(plan_id) + "\n";
+            str += "SettlementName:" + settlement.getName() + "\n";
+            str += "PlanStatus:";
             if(status==PlanStatus::AVALIABLE)
-                str += " available";
+                str += "AVAILABLE";
             else
-                str += " busy";
+                str += "BUSY";
+            str += "\nSelectionPolicy:" + selectionPolicy->toString() + "\n";
+            str += "LifeQualityScore:" + std::to_string(life_quality_score) + "\n";
+            str += "EconomyScore:" + std::to_string(economy_score) + "\n";
+            str += "EnviromentScore:" + std::to_string(environment_score) + "\n";
 
-            str += " life_quality_score:" + std::to_string(life_quality_score) += " economy_score:" + std::to_string(economy_score) + " enviroment_score:" + std::to_string(environment_score);
-
-            str += " operational_facilities:\n";
-
-            for (int i = 0; i < facilities.size(); i++)
-            {
-                str += facilities[i]->toString()+"\n";
-            }
-
-            str += "underConstruction_facilities:\n";
-
-            for (int i = 0; i < underConstruction.size();i++){
-                str += underConstruction[i]->toString() + "\n";
-            }
+            for(auto *facility:facilities)
+                str += facility->toString();
+            for(auto *facility:underConstruction)
+                str += facility->toString();
 
             return str;
         }

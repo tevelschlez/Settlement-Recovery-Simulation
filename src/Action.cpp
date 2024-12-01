@@ -80,6 +80,7 @@ class AddSettlement : public BaseAction {
             try{
                 simulation.addSettlement(new Settlement(settlementName,settlementType));
                 simulation.addAction(this);
+                complete();
             }
             catch(const std::exception &e){
                 error(e.what());
@@ -104,6 +105,7 @@ class AddFacility : public BaseAction {
             try{
                 simulation.addFacility(FacilityType(facilityName, facilityCategory, price, lifeQualityScore, economyScore, environmentScore));
                 simulation.addAction(this);
+                complete();
             }
             catch(std::exception &e){
                 error(e.what());
@@ -127,7 +129,16 @@ class PrintPlanStatus: public BaseAction {
     public:
         PrintPlanStatus::PrintPlanStatus(int planId):planId(planId){}
 
-        void PrintPlanStatus::act(Simulation &simulation) override{}
+        void PrintPlanStatus::act(Simulation &simulation) override{
+            if(!simulation.isPlanExists(planId))
+                error("Plan doesn't exist");
+            else{
+                Plan plan = simulation.getPlan(planId);
+                std::cout << plan.toString() << std::endl;
+                simulation.addAction(this);
+                complete();
+            }
+        }
         PrintPlanStatus *clone() const override{}
         const string toString() const override{}
 
