@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include "Simulation.h"
+#include <iostream>
 
 class BaseAction{
     public:
@@ -13,9 +14,14 @@ class BaseAction{
         virtual ~BaseAction() { }
 
     protected:
-        void complete();
-        void error(string errorMsg);
-        const string &getErrorMsg() const;
+        void BaseAction::complete() { status == ActionStatus::COMPLETED; }
+
+        void BaseAction::error(string errorMsg) { this->errorMsg = errorMsg;
+            status == ActionStatus::ERROR;
+            std::cout << "Error:" + errorMsg << std::endl;
+        }
+
+        const string &getErrorMsg() const { return errorMsg; }
 
     private:
         string errorMsg;
@@ -27,10 +33,11 @@ class SimulateStep : public BaseAction {
     public:
         SimulateStep::SimulateStep(const int numOfSteps):numOfSteps(numOfSteps){}
 
-        void    SimulateStep::act(Simulation &simulation) override{
+        void    SimulateStep::act(Simulation &simulation) override{//does not return error
             for (int i = 0; i < numOfSteps;i++)
                 simulation.step();
             simulation.addAction(this);
+            complete();
         }
 
         const string toString() const override{}
@@ -42,23 +49,18 @@ class SimulateStep : public BaseAction {
 
 class AddPlan : public BaseAction {
     public:
-        AddPlan::AddPlan(const string &settlementName, const string &selectionPolicy):settlementName(settlementName),selectionPolicy(selectionPolicy){
+        AddPlan::AddPlan(const string &settlementName, const string &selectionPolicy):settlementName(settlementName),selectionPolicy(selectionPolicy){}
 
-        }
         void AddPlan::act(Simulation &simulation) override{
-            SelectionPolicy *selection;
-
-            if (selectionPolicy == "nve")
-                selection = new NaiveSelection();
-            else if (selectionPolicy == "bal")
-                selection = new BalancedSelection(0, 0, 0);
-            else if (selectionPolicy == "eco")
-                selection = new EconomySelection();
-            else if (selectionPolicy == "env")
-                selection = new SustainabilitySelection();
-
-            simulation.addPlan(simulation.getSettlement(settlementName), selection);
-            simulation.addAction(this);
+            SelectionPolicy* policy=simulation.getSelectionPolicy(selectionPolicy);
+            try{
+                simulation.addPlan(simulation.getSettlement(settlementName), policy);
+                simulation.addAction(this);
+                complete();
+            }
+            catch (const std::exception &e){
+                error(e.what());
+            }
         }
 
         const string toString() const override{}
@@ -75,8 +77,13 @@ class AddSettlement : public BaseAction {
         AddSettlement::AddSettlement(const string &settlementName,SettlementType settlementType):settlementName(settlementName),settlementType(settlementType){}
         
         void AddSettlement::act(Simulation &simulation) override{
-            simulation.addSettlement(new Settlement(settlementName,settlementType));
-            simulation.addAction(this);
+            try{
+                simulation.addSettlement(new Settlement(settlementName,settlementType));
+                simulation.addAction(this);
+            }
+            catch(const std::exception &e){
+                error(e.what());
+            }
         }
 
         AddSettlement *clone() const override{}
@@ -94,8 +101,13 @@ class AddFacility : public BaseAction {
         AddFacility::AddFacility(const string &facilityName, const FacilityCategory facilityCategory, const int price, const int lifeQualityScore, const int economyScore, const int environmentScore):facilityName(facilityName),facilityCategory(facilityCategory),price(price),lifeQualityScore(lifeQualityScore),economyScore(economyScore),environmentScore(environmentScore){}
         
         void AddFacility::act(Simulation &simulation) override{
-            simulation.addFacility(FacilityType(facilityName, facilityCategory, price, lifeQualityScore, economyScore, environmentScore));
-            simulation.addAction(this);
+            try{
+                simulation.addFacility(FacilityType(facilityName, facilityCategory, price, lifeQualityScore, economyScore, environmentScore));
+                simulation.addAction(this);
+            }
+            catch(std::exception &e){
+                error(e.what());
+            }
         }
       
         AddFacility *clone() const override{}
