@@ -3,6 +3,7 @@
 #include <vector>
 using std::string;
 using std::vector;
+#include <sstream>
 
 enum class FacilityStatus {
     UNDER_CONSTRUCTIONS,

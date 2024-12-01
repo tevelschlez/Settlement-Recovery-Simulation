@@ -1,7 +1,9 @@
 #pragma once
 #include <vector>
+#include <stdexcept>
 #include "Facility.h"
 using std::vector;
+using std::string;
 
 class SelectionPolicy {
     public:
@@ -13,11 +15,11 @@ class SelectionPolicy {
 
 class NaiveSelection: public SelectionPolicy {
     public:
-        NaiveSelection(){}
+        NaiveSelection();
         const FacilityType& selectFacility(const vector<FacilityType>& facilitiesOptions) ;
-        const string toString() const ;
-        NaiveSelection *clone() const ;
-        ~NaiveSelection();
+        const string toString() const override; 
+        NaiveSelection *clone() const override;
+        ~NaiveSelection() override;
     private:
         int lastSelectedIndex;
 };
@@ -26,24 +28,25 @@ class BalancedSelection: public SelectionPolicy {
     public:
         BalancedSelection(int LifeQualityScore, int EconomyScore, int EnvironmentScore);
         const FacilityType& selectFacility(const vector<FacilityType>& facilitiesOptions) ;
-        const string toString() const ;
-        BalancedSelection *clone() const ;
-        ~BalancedSelection() ;
-        int minAmongScores(int sum_lifeQuality,int sum_economy, int sum_enviroment);
-        int maxAmongScores(int sum_lifeQuality,int sum_economy, int sum_enviroment);
+        const string toString() const override;
+        BalancedSelection *clone() const override ;
+        ~BalancedSelection() override ;
+        
     private:
         int LifeQualityScore;
         int EconomyScore;
         int EnvironmentScore;
+        int minAmongScores(int sum_lifeQuality,int sum_economy, int sum_enviroment);
+        int maxAmongScores(int sum_lifeQuality,int sum_economy, int sum_enviroment);
 };
 
 class EconomySelection: public SelectionPolicy {
     public:
-        EconomySelection(){}
+        EconomySelection();
         const FacilityType& selectFacility(const vector<FacilityType>& facilitiesOptions) ;
-        const string toString() const ;
-        EconomySelection *clone() const ;
-        ~EconomySelection();
+        const string toString() const override ;
+        EconomySelection *clone() const override;
+        ~EconomySelection() override;
     private:
         int lastSelectedIndex;
 
@@ -51,11 +54,11 @@ class EconomySelection: public SelectionPolicy {
 
 class SustainabilitySelection: public SelectionPolicy {
     public:
-        SustainabilitySelection(){}
+        SustainabilitySelection();
         const FacilityType& selectFacility(const vector<FacilityType>& facilitiesOptions) ;
-        const string toString() const ;
-        SustainabilitySelection *clone() const ;
-        ~SustainabilitySelection() ;
+        const string toString() const override ;
+        SustainabilitySelection *clone() const override;
+        ~SustainabilitySelection() override;
     private:
         int lastSelectedIndex;
 };

@@ -1,10 +1,4 @@
 #include "Facility.h"
-#pragma once
-#include <string>
-#include <vector>
-#include <sstream>
-using std::string;
-using std::vector;
 
 
 FacilityType::FacilityType(const string &name, const FacilityCategory category, const int price, const int lifeQuality_score, const int economy_score, const int environment_score)
@@ -49,10 +43,14 @@ const int Facility::getTimeLeft() const {
 }
 
 FacilityStatus Facility::step() {
-    timeLeft--;
+    if (timeLeft > 0) {
+        timeLeft--;
+    }
 
-    if(timeLeft==0)
-        status=FacilityStatus::OPERATIONAL;
+    if (timeLeft == 0) {
+        status = FacilityStatus::OPERATIONAL;
+    }
+    return status;
 }
 
 void Facility::setStatus(FacilityStatus status) {
