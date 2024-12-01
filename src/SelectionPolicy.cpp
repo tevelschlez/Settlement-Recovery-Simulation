@@ -3,7 +3,7 @@
 
 
 NaiveSelection::NaiveSelection() : lastSelectedIndex(-1) {}
-
+    
 const FacilityType& NaiveSelection::selectFacility(const vector<FacilityType>& facilitiesOptions) {
         if (lastSelectedIndex == static_cast<int>(facilitiesOptions.size()) - 1) {
         lastSelectedIndex = -1;
@@ -19,7 +19,7 @@ NaiveSelection* NaiveSelection:: clone() const {
     return new NaiveSelection(*this);
 
 }
-NaiveSelection::~NaiveSelection() {}
+//NaiveSelection::~NaiveSelection() {}
 
 
 BalancedSelection::BalancedSelection(int LifeQualityScore, int EconomyScore, int EnvironmentScore):LifeQualityScore(LifeQualityScore),EconomyScore(EconomyScore),EnvironmentScore(EnvironmentScore){}
@@ -89,12 +89,14 @@ BalancedSelection* BalancedSelection:: clone() const {
     return new BalancedSelection(*this);
 
 }
-BalancedSelection::~BalancedSelection()  {
+ //BalancedSelection::~BalancedSelection()  {}
 
-}
+
 
 
 EconomySelection::EconomySelection() : lastSelectedIndex(-1) {}
+
+
 
 const FacilityType& EconomySelection:: selectFacility(const vector<FacilityType>& facilitiesOptions) {
     for (int i = lastSelectedIndex + 1, attempts = 0; 
@@ -117,12 +119,10 @@ EconomySelection *EconomySelection::clone() const {
     return new EconomySelection(*this);
 }
 
-EconomySelection::~EconomySelection()  {
-
-}
+//EconomySelection::~EconomySelection() {}
 
 
-SustainabilitySelection::SustainabilitySelection() : lastSelectedIndex(-1) {}
+SustainabilitySelection::SustainabilitySelection() : lastSelectedIndex(-1) {}  
 
 const FacilityType& SustainabilitySelection:: selectFacility(const vector<FacilityType>& facilitiesOptions) {
             for (int i = lastSelectedIndex + 1, attempts = 0; 
@@ -145,5 +145,5 @@ SustainabilitySelection* SustainabilitySelection::clone() const {
     return new SustainabilitySelection(*this);
 
 }
-SustainabilitySelection::~SustainabilitySelection()  {
-}
+//SustainabilitySelection::~SustainabilitySelection()  {}
+

@@ -16,10 +16,10 @@ class SelectionPolicy {
 class NaiveSelection: public SelectionPolicy {
     public:
         NaiveSelection();
-        const FacilityType& selectFacility(const vector<FacilityType>& facilitiesOptions) ;
+        const FacilityType& selectFacility(const vector<FacilityType>& facilitiesOptions) override;
         const string toString() const override; 
         NaiveSelection *clone() const override;
-        ~NaiveSelection() override;
+        ~NaiveSelection() override = default;
     private:
         int lastSelectedIndex;
 };
@@ -27,10 +27,10 @@ class NaiveSelection: public SelectionPolicy {
 class BalancedSelection: public SelectionPolicy {
     public:
         BalancedSelection(int LifeQualityScore, int EconomyScore, int EnvironmentScore);
-        const FacilityType& selectFacility(const vector<FacilityType>& facilitiesOptions) ;
+        const FacilityType& selectFacility(const vector<FacilityType>& facilitiesOptions) override;
         const string toString() const override;
-        BalancedSelection *clone() const override ;
-        ~BalancedSelection() override ;
+        BalancedSelection *clone() const override;
+        ~BalancedSelection() override = default;
         
     private:
         int LifeQualityScore;
@@ -43,10 +43,10 @@ class BalancedSelection: public SelectionPolicy {
 class EconomySelection: public SelectionPolicy {
     public:
         EconomySelection();
-        const FacilityType& selectFacility(const vector<FacilityType>& facilitiesOptions) ;
-        const string toString() const override ;
+        const FacilityType& selectFacility(const vector<FacilityType>& facilitiesOptions) override;
+        const string toString() const override;
         EconomySelection *clone() const override;
-        ~EconomySelection() override;
+        ~EconomySelection() override = default;
     private:
         int lastSelectedIndex;
 
@@ -55,10 +55,10 @@ class EconomySelection: public SelectionPolicy {
 class SustainabilitySelection: public SelectionPolicy {
     public:
         SustainabilitySelection();
-        const FacilityType& selectFacility(const vector<FacilityType>& facilitiesOptions) ;
+        const FacilityType& selectFacility(const vector<FacilityType>& facilitiesOptions) override;
         const string toString() const override ;
         SustainabilitySelection *clone() const override;
-        ~SustainabilitySelection() override;
+        ~SustainabilitySelection() override = default;
     private:
         int lastSelectedIndex;
 };
