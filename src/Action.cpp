@@ -5,13 +5,13 @@
 #include <iostream>
 
 //BaseAction Class
-        BaseAction::BaseAction(){}
+        BaseAction::BaseAction():errorMsg(""){}
         ActionStatus BaseAction::getStatus() const { return status; }
 
-        void BaseAction::complete() { status == ActionStatus::COMPLETED; }
+        void BaseAction::complete() { status = ActionStatus::COMPLETED; }
 
         void BaseAction::error(string errorMsg) { this->errorMsg = errorMsg;
-            status == ActionStatus::ERROR;
+            status = ActionStatus::ERROR;
             std::cout << "Error:" + errorMsg << std::endl;
         }
 

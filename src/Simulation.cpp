@@ -208,7 +208,7 @@ class Auxiliary;
 
         void Simulation::addPlan(const Settlement &settlement, SelectionPolicy *selectionPolicy)
         {
-            if(!isSettlementExists||selectionPolicy==nullptr)
+            if(!isSettlementExists(settlement.getName())||selectionPolicy==nullptr)
                 throw std::invalid_argument("Cannot create this plan");
             else
             {
@@ -223,14 +223,14 @@ class Auxiliary;
         }
 
         bool Simulation::addSettlement(Settlement *settlement){
-            if(isSettlementExists)
+            if(isSettlementExists(settlement->getName()))
                 throw std::invalid_argument("Settlement already exists");
             else
                 settlements.push_back(settlement);
         }
 
         bool Simulation::addFacility(FacilityType facility){
-            if (isFacilityExists)
+            if (isFacilityExists(facility.getName()))
                 throw std::invalid_argument("Facility already exists");
             else
               facilitiesOptions.push_back(facility);

@@ -147,3 +147,4 @@ using std::vector;
             if (settlement.getType() == SettlementType::METROPOLIS)
                 construcion_limit = 3;
             return construcion_limit;
+       }

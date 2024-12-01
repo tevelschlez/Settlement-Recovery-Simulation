@@ -1,5 +1,4 @@
 #include "Facility.h"
-#pragma once
 #include <string>
 #include <vector>
 #include <sstream>
