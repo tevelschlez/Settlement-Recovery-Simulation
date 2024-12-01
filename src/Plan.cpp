@@ -60,12 +60,26 @@ class Plan {
 
 
         void printStatus(){
-            if(status==PlanStatus::AVALIABLE)
-                std::cout << "available" << std::endl;
+            string str = "PlanID:" + std::to_string(plan_id) + "\n";
+            str += "SettlementName:" + settlement.getName() + "\n";
+            str += "PlanStatus:";
+            if (status == PlanStatus::AVALIABLE)
+                str += "AVAILABLE";
             else
-                std::cout << "busy" << std::endl;
+                str += "BUSY";
+            str += "\nSelectionPolicy:" + selectionPolicy->toString() + "\n";
+            str += "LifeQualityScore:" + std::to_string(life_quality_score) + "\n";
+            str += "EconomyScore:" + std::to_string(economy_score) + "\n";
+            str += "EnviromentScore:" + std::to_string(environment_score) + "\n";
+
+            for (auto *facility : facilities)
+                str += facility->toString();
+            for (auto *facility : underConstruction)
+                str += facility->toString();
+
+            std::cout << str << std::endl;
         }
-        
+
         const vector<Facility*> &Plan:: getFacilities() const{
             return facilities;
         }
@@ -88,23 +102,7 @@ class Plan {
         }
 
         const string toString() const{
-            string str = "PlanID:" + std::to_string(plan_id) + "\n";
-            str += "SettlementName:" + settlement.getName() + "\n";
-            str += "PlanStatus:";
-            if(status==PlanStatus::AVALIABLE)
-                str += "AVAILABLE";
-            else
-                str += "BUSY";
-            str += "\nSelectionPolicy:" + selectionPolicy->toString() + "\n";
-            str += "LifeQualityScore:" + std::to_string(life_quality_score) + "\n";
-            str += "EconomyScore:" + std::to_string(economy_score) + "\n";
-            str += "EnviromentScore:" + std::to_string(environment_score) + "\n";
-
-            for(auto *facility:facilities)
-                str += facility->toString();
-            for(auto *facility:underConstruction)
-                str += facility->toString();
-
+            string str = "PlanID:" + std::to_string(plan_id) + "\nSettlementName:" + settlement.getName() + "\nLifeQuality_Score:" + std::to_string(life_quality_score) + "\nEconomy_Score:" + std::to_string(economy_score) + "\nEnviroment_Score:" + std::to_string(environment_score);
             return str;
         }
 

@@ -313,6 +313,9 @@ class Simulation{
         }
 
         void Simulation::close(){
+            for(Plan plan :plans){
+                std::cout << plan.toString() << std::endl;
+            }
             isRunning = false;
         }
         void Simulation::open(){

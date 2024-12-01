@@ -134,7 +134,7 @@ class PrintPlanStatus: public BaseAction {
                 error("Plan doesn't exist");
             else{
                 Plan plan = simulation.getPlan(planId);
-                std::cout << plan.toString() << std::endl;
+                plan.printStatus();
                 simulation.addAction(this);
                 complete();
             }
@@ -184,7 +184,9 @@ class ChangePlanPolicy : public BaseAction {
 class PrintActionsLog : public BaseAction {
     public:
         PrintActionsLog::PrintActionsLog(){}
-        void PrintActionsLog::act(Simulation &simulation) override{}
+        void PrintActionsLog::act(Simulation &simulation) override{
+
+        }
 
         PrintActionsLog *clone() const override{}
         const string toString() const override{}
@@ -196,7 +198,8 @@ class Close : public BaseAction {
     public:
         Close::Close(){}
         void Close::act(Simulation &simulation) override{
-
+            simulation.close();
+            complete();
         }
         Close *clone() const override{}
         const string toString() const override{}
