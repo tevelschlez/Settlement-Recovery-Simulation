@@ -6,8 +6,7 @@
 using std::string;
 using std::vector;
 
-class FacilityType {
-    public:
+//FacilityType Class
         FacilityType::FacilityType(const string &name, const FacilityCategory category, const int price, const int lifeQuality_score, const int economy_score, const int environment_score):name(name),category(category),price(price),lifeQuality_score(lifeQuality_score),economy_score(economy_score),environment_score(environment_score){}
 
         const string &FacilityType::getName() const{
@@ -31,20 +30,9 @@ class FacilityType {
             return category;
         }
 
-    protected:
-        const string name;
-        const FacilityCategory category;
-        const int price;
-        const int lifeQuality_score;
-        const int economy_score;
-        const int environment_score;
-};
 
+//Facility Class
 
-
-class Facility: public FacilityType {
-
-    public:
         Facility::Facility(const string &name, const string &settlementName, const FacilityCategory category, const int price, const int lifeQuality_score, const int economy_score, const int environment_score):FacilityType(name,category,price,lifeQuality_score,economy_score,environment_score),settlementName(settlementName),status(FacilityStatus::UNDER_CONSTRUCTIONS),timeLeft(price){
         }
 
@@ -64,6 +52,8 @@ class Facility: public FacilityType {
 
             if(timeLeft==0)
                 status=FacilityStatus::OPERATIONAL;
+
+            return status;
         }
 
         void Facility::setStatus(FacilityStatus status){
@@ -74,7 +64,7 @@ class Facility: public FacilityType {
             return status;
         }
 
-        const string toString() const{
+        const string Facility::toString() const{
             string str = "FacilityName:" + name + "\n";
             if(status==FacilityStatus::OPERATIONAL)
                 str += "OPERATIONAL\n";
@@ -83,9 +73,3 @@ class Facility: public FacilityType {
 
             return str;
         }
-
-    private:
-        const string settlementName;
-        FacilityStatus status;
-        int timeLeft;
-};

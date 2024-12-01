@@ -4,16 +4,10 @@
 #include "Simulation.h"
 #include <iostream>
 
-class BaseAction{
-    public:
-        BaseAction(){}
-        ActionStatus getStatus() const{}
-        virtual void act(Simulation& simulation){}
-        virtual const string toString() const{}
-        virtual BaseAction* clone() const {}
-        virtual ~BaseAction() { }
+//BaseAction Class
+        BaseAction::BaseAction(){}
+        ActionStatus BaseAction::getStatus() const { return status; }
 
-    protected:
         void BaseAction::complete() { status == ActionStatus::COMPLETED; }
 
         void BaseAction::error(string errorMsg) { this->errorMsg = errorMsg;
@@ -21,37 +15,28 @@ class BaseAction{
             std::cout << "Error:" + errorMsg << std::endl;
         }
 
-        const string &getErrorMsg() const { return errorMsg; }
+        const string &BaseAction::getErrorMsg() const { return errorMsg; }
 
-    private:
-        string errorMsg;
-        ActionStatus status;
-};
 
-class SimulateStep : public BaseAction {
+//SimulateStep Class
 
-    public:
         SimulateStep::SimulateStep(const int numOfSteps):numOfSteps(numOfSteps){}
 
-        void    SimulateStep::act(Simulation &simulation) override{//does not return error
+        void    SimulateStep::act(Simulation &simulation) {//does not return error
             for (int i = 0; i < numOfSteps;i++)
                 simulation.step();
             simulation.addAction(this);
             complete();
         }
 
-        const string toString() const override{}
-        SimulateStep *clone() const override{}
+        const string SimulateStep::toString() const {}
+        SimulateStep *SimulateStep::clone() const { return new SimulateStep(*this); }
 
-    private:
-        const int numOfSteps;
-};
 
-class AddPlan : public BaseAction {
-    public:
+//AddPlan Class
         AddPlan::AddPlan(const string &settlementName, const string &selectionPolicy):settlementName(settlementName),selectionPolicy(selectionPolicy){}
 
-        void AddPlan::act(Simulation &simulation) override{
+        void AddPlan::act(Simulation &simulation) {
             SelectionPolicy* policy=simulation.getSelectionPolicy(selectionPolicy);
             try{
                 simulation.addPlan(simulation.getSettlement(settlementName), policy);
@@ -63,20 +48,15 @@ class AddPlan : public BaseAction {
             }
         }
 
-        const string toString() const override{}
-        AddPlan *clone() const override{}
-
-    private:
-        const string settlementName;
-        const string selectionPolicy;
-};
+        const string AddPlan::toString() const {}
+        AddPlan *AddPlan::clone() const {}
 
 
-class AddSettlement : public BaseAction {
-    public:
+
+//AddSettlement
         AddSettlement::AddSettlement(const string &settlementName,SettlementType settlementType):settlementName(settlementName),settlementType(settlementType){}
         
-        void AddSettlement::act(Simulation &simulation) override{
+        void AddSettlement::act(Simulation &simulation) {
             try{
                 simulation.addSettlement(new Settlement(settlementName,settlementType));
                 simulation.addAction(this);
@@ -87,21 +67,17 @@ class AddSettlement : public BaseAction {
             }
         }
 
-        AddSettlement *clone() const override{}
-        const string toString() const override{}
+        AddSettlement *AddSettlement::clone() const {}
+        const string AddSettlement:: toString() const {}
         
-    private:
-        const string settlementName;
-        const SettlementType settlementType;
-};
 
 
 
-class AddFacility : public BaseAction {
-    public:
+
+//AddFacility Class
         AddFacility::AddFacility(const string &facilityName, const FacilityCategory facilityCategory, const int price, const int lifeQualityScore, const int economyScore, const int environmentScore):facilityName(facilityName),facilityCategory(facilityCategory),price(price),lifeQualityScore(lifeQualityScore),economyScore(economyScore),environmentScore(environmentScore){}
         
-        void AddFacility::act(Simulation &simulation) override{
+        void AddFacility::act(Simulation &simulation) {
             try{
                 simulation.addFacility(FacilityType(facilityName, facilityCategory, price, lifeQualityScore, economyScore, environmentScore));
                 simulation.addAction(this);
@@ -112,24 +88,14 @@ class AddFacility : public BaseAction {
             }
         }
       
-        AddFacility *clone() const override{}
-        const string toString() const override{}
+        AddFacility *AddFacility::clone() const {}
+        const string AddFacility:: toString() const {}
 
-    private:
-        const string facilityName;
-        const FacilityCategory facilityCategory;
-        const int price;
-        const int lifeQualityScore;
-        const int economyScore;
-        const int environmentScore;
 
-};
-
-class PrintPlanStatus: public BaseAction {
-    public:
+//PrintPlanStatus Class
         PrintPlanStatus::PrintPlanStatus(int planId):planId(planId){}
 
-        void PrintPlanStatus::act(Simulation &simulation) override{
+        void PrintPlanStatus::act(Simulation &simulation) {
             if(!simulation.isPlanExists(planId))
                 error("Plan doesn't exist");
             else{
@@ -139,19 +105,16 @@ class PrintPlanStatus: public BaseAction {
                 complete();
             }
         }
-        PrintPlanStatus *clone() const override{}
-        const string toString() const override{}
-
-    private:
-        const int planId;
-};
+        PrintPlanStatus *PrintPlanStatus::clone() const {}
+        const string PrintPlanStatus:: toString() const {}
 
 
-class ChangePlanPolicy : public BaseAction {
-    public:
+
+
+//ChangePlanPolicy Class
         ChangePlanPolicy::ChangePlanPolicy(const int planId, const string &newPolicy):planId(planId),newPolicy(newPolicy){}
 
-        void ChangePlanPolicy::act(Simulation &simulation) override{
+        void ChangePlanPolicy::act(Simulation &simulation) {
             string e = "Cannot change selection policy";
             if (!simulation.isPlanExists(planId))
                 error(e);
@@ -172,58 +135,45 @@ class ChangePlanPolicy : public BaseAction {
             }
         }
 
-        ChangePlanPolicy *clone() const override{}
-        const string toString() const override{}
-
-    private:
-        const int planId;
-        const string newPolicy;
-};
+        ChangePlanPolicy *ChangePlanPolicy::clone() const {}
+        const string ChangePlanPolicy::toString() const {}
 
 
-class PrintActionsLog : public BaseAction {
-    public:
+
+
+//PrintActionsLog Class
         PrintActionsLog::PrintActionsLog(){}
-        void PrintActionsLog::act(Simulation &simulation) override{
+        void PrintActionsLog::act(Simulation &simulation) {
 
         }
 
-        PrintActionsLog *clone() const override{}
-        const string toString() const override{}
+        PrintActionsLog *PrintActionsLog::clone() const {}
+        const string PrintActionsLog:: toString() const {}
 
-    private:
-};
 
-class Close : public BaseAction {
-    public:
+
+//Close Class
         Close::Close(){}
-        void Close::act(Simulation &simulation) override{
+        void Close::act(Simulation &simulation) {
             simulation.close();
             complete();
         }
-        Close *clone() const override{}
-        const string toString() const override{}
+        Close *Close::clone() const {}
+        const string Close::toString() const {}
 
-    private:
-};
 
-class BackupSimulation : public BaseAction {
-    public:
+
+//BackupSimulation Class
         BackupSimulation::BackupSimulation(){}
-        void BackupSimulation::act(Simulation &simulation) override{}
-        BackupSimulation *clone() const override{}
-        const string toString() const override{}
-
-    private:
-};
+        void BackupSimulation::act(Simulation &simulation) {}
+        BackupSimulation *BackupSimulation::clone() const {}
+        const string BackupSimulation::toString() const {}
 
 
-class RestoreSimulation : public BaseAction {
-    public:
+
+//RestoreSimualtion Class
         RestoreSimulation::RestoreSimulation(){}
-        void RestoreSimulation::act(Simulation &simulation) override{}
-        RestoreSimulation *clone() const override{}
-        const string toString() const override{}
+        void RestoreSimulation::act(Simulation &simulation) {}
+        RestoreSimulation *RestoreSimulation::clone() const {}
+        const string RestoreSimulation::toString() const {}
         
-    private:
-};

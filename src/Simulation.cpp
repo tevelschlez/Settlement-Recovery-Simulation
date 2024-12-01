@@ -16,16 +16,6 @@ using std::vector;
 class Auxiliary;
 
 
-class Simulation{
-    private:
-        bool isRunning;
-        int planCounter; //For assigning unique plan IDs
-        vector<BaseAction*> actionsLog;
-        vector<Plan> plans;
-        vector<Settlement*> settlements;
-        vector<FacilityType> facilitiesOptions;
-
-    public:
         Simulation::Simulation(const string &configFilePath) : isRunning(false), planCounter(0) { loadConfigFile(configFilePath); }
 
         void Simulation::loadConfigFile(const string &configFilePath){
@@ -321,5 +311,5 @@ class Simulation{
         void Simulation::open(){
             isRunning = true;
         }
-};
+
 

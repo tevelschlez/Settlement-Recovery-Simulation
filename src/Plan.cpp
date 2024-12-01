@@ -6,8 +6,6 @@
 #include "SelectionPolicy.h"
 using std::vector;
 
-class Plan {
-    public:
 
         //in this class there is a need to implement the 'Rule Of 5": destructor, copy constructor, copy assignment operator, move constructor, move assignment operator
 
@@ -29,26 +27,28 @@ class Plan {
  
 
         void Plan::activateSelectionPolicy(){//choosing the next facility according to the selection polity and adding it to the under construction lst
+            int size = underConstruction.size();
 
             Facility* f_to_add=new Facility(selectionPolicy->selectFacility(facilityOptions),settlement.getName());
             addFacility(f_to_add);
 
-            if(underConstruction.size()==constructionLimit)
+            if(size==constructionLimit)
                 status = PlanStatus::BUSY;
         }
 
         //if a facility is getting off from the under constructuion to the operational it meand there is a free spot to add to the list
-        void step(){
+        void Plan::step(){
+            int size = underConstruction.size();
 
             while (status == PlanStatus::AVALIABLE)
             {
                 activateSelectionPolicy();
             }
 
-            for( int i=0; i<underConstruction.size();i++){
-                underConstruction[i]->step();
+            for( int i=0; i<size;i++){
+                    FacilityStatus currentStatus= underConstruction[i]->step();
 
-                if(underConstruction[i]->getStatus()==FacilityStatus::OPERATIONAL){
+                if(currentStatus==FacilityStatus::OPERATIONAL){
                     facilities.push_back(underConstruction[i]);
                     underConstruction.erase(underConstruction.begin() + i);
                     i=i-1;
@@ -59,7 +59,7 @@ class Plan {
         }
 
 
-        void printStatus(){
+        void Plan::printStatus(){
             string str = "PlanID:" + std::to_string(plan_id) + "\n";
             str += "SettlementName:" + settlement.getName() + "\n";
             str += "PlanStatus:";
@@ -86,7 +86,7 @@ class Plan {
 
         //if the length of underConstruction is equal to constuction_limit we can not add a plan
 
-        void addFacility(Facility* facility){//update the plan scores according to the facility
+        void Plan::addFacility(Facility* facility){//update the plan scores according to the facility
             if(facility->getStatus()==FacilityStatus::UNDER_CONSTRUCTIONS && status==PlanStatus::AVALIABLE)
                 underConstruction.push_back(facility);
 
@@ -101,12 +101,12 @@ class Plan {
             environment_score += facility->getEnvironmentScore();
         }
 
-        const string toString() const{
+        const string Plan::toString() const{
             string str = "PlanID:" + std::to_string(plan_id) + "\nSettlementName:" + settlement.getName() + "\nLifeQuality_Score:" + std::to_string(life_quality_score) + "\nEconomy_Score:" + std::to_string(economy_score) + "\nEnviroment_Score:" + std::to_string(environment_score);
             return str;
         }
 
-        const int getID(){
+        const int Plan::getID(){
             return plan_id;
         }
 
@@ -137,16 +137,7 @@ class Plan {
 
         Plan::Plan(Plan &&other) noexcept : plan_id(other.plan_id), settlement(other.settlement), selectionPolicy(other.selectionPolicy),facilityOptions(other.facilityOptions), status(other.status), life_quality_score(other.life_quality_score), economy_score(other.economy_score), environment_score(other.environment_score) ,facilities(std::move(other.facilities)),underConstruction(std::move(other.underConstruction)),constructionLimit(std::move(other.constructionLimit)){}
 
-    private:
-        int plan_id;
-        const Settlement &settlement;
-        SelectionPolicy *selectionPolicy; //What happens if we change this to a reference?
-        PlanStatus status;
-        vector<Facility*> facilities;
-        vector<Facility*> underConstruction;
-        const vector<FacilityType> &facilityOptions;
-        int life_quality_score, economy_score, environment_score;
-        const int constructionLimit;
+  
        const int Plan::getConstructionLimit(){
             int construcion_limit;
             if (settlement.getType() == SettlementType::VILLAGE)
@@ -156,5 +147,3 @@ class Plan {
             if (settlement.getType() == SettlementType::METROPOLIS)
                 construcion_limit = 3;
             return construcion_limit;
-        }
-};
