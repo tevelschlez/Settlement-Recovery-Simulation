@@ -132,19 +132,10 @@ class Simulation{
                 const string &actionType = arguments[0];
 
                 if(actionType=="Plan"){
-                 const string &settlementName = arguments[1];
-                    SelectionPolicy *selection;
+                    const string &settlementName = arguments[1];
+                    const string &policy = arguments[2];
 
-                    if(arguments[2]=="nve")
-                        selection = new NaiveSelection();
-                    else if (arguments[2]=="bal")
-                        selection = new BalancedSelection(0,0,0);
-                  else if (arguments[2]=="eco")
-                        selection = new EconomySelection();
-                    else if (arguments[2]=="env")
-                        selection=new SustainabilitySelection();
-
-                     action = new AddPlan(settlementName, arguments[2]);
+                    action = new AddPlan(settlementName, policy);
                  
               }
 
