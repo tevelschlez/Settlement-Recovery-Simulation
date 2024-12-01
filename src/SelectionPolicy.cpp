@@ -23,7 +23,7 @@ class NaiveSelection: public SelectionPolicy {
         }
 
         const string NaiveSelection:: toString() const {
-            return "Naive Selection";
+            return "nve";
         }
         NaiveSelection * NaiveSelection:: clone() const {
 
@@ -98,7 +98,7 @@ class BalancedSelection: public SelectionPolicy {
 
 
         const string BalancedSelection:: toString() const {
-            return "Balanced Selection";
+            return "bal";
         }
         BalancedSelection * BalancedSelection:: clone() const {
 
@@ -133,7 +133,7 @@ class EconomySelection: public SelectionPolicy {
         }
 
         const string EconomySelection:: toString() const {
-            return "Economy Selection";
+            return "eco";
         }
         EconomySelection *EconomySelection::clone() const {
 
@@ -167,7 +167,7 @@ class SustainabilitySelection: public SelectionPolicy {
             }
         }
         const string SustainabilitySelection:: toString() const {
-            return "Sustainability Selection";
+            return "env";
         }
 
         SustainabilitySelection *SustainabilitySelection::clone() const {

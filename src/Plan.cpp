@@ -112,6 +112,12 @@ class Plan {
             return plan_id;
         }
 
+        bool Plan::comparePolicy(const string &policyToCompare){
+            if(policyToCompare==selectionPolicy->toString())
+                return true;
+            return false;
+        }
+
         //rule of 5
 
         Plan::~Plan(){

@@ -151,7 +151,26 @@ class ChangePlanPolicy : public BaseAction {
     public:
         ChangePlanPolicy::ChangePlanPolicy(const int planId, const string &newPolicy):planId(planId),newPolicy(newPolicy){}
 
-        void ChangePlanPolicy::act(Simulation &simulation) override{}
+        void ChangePlanPolicy::act(Simulation &simulation) override{
+            string e = "Cannot change selection policy";
+            if (!simulation.isPlanExists(planId))
+                error(e);
+            else{
+                Plan &plan = simulation.getPlan(planId);
+                if(plan.comparePolicy(newPolicy))
+                    error(e);
+                else{
+                    SelectionPolicy *policy = simulation.getSelectionPolicy(newPolicy);
+                    if(policy==nullptr)
+                        error(e);
+                    else{
+                        plan.setSelectionPolicy(policy);
+                        simulation.addAction(this);
+                        complete();
+                    }
+                }
+            }
+        }
 
         ChangePlanPolicy *clone() const override{}
         const string toString() const override{}
