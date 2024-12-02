@@ -25,8 +25,8 @@
         void    SimulateStep::act(Simulation &simulation) {//does not return error
             for (int i = 0; i < numOfSteps;i++)
                 simulation.step();
-            simulation.addAction(this);
             complete();
+            simulation.addAction(this);
         }
 
         const string SimulateStep::toString() const {}
@@ -40,12 +40,13 @@
             SelectionPolicy* policy=simulation.getSelectionPolicy(selectionPolicy);
             try{
                 simulation.addPlan(simulation.getSettlement(settlementName), policy);
-                simulation.addAction(this);
                 complete();
             }
             catch (const std::exception &e){
                 error(e.what());
             }
+
+            simulation.addAction(this);
         }
 
         const string AddPlan::toString() const {}
@@ -59,12 +60,13 @@
         void AddSettlement::act(Simulation &simulation) {
             try{
                 simulation.addSettlement(new Settlement(settlementName,settlementType));
-                simulation.addAction(this);
                 complete();
             }
             catch(const std::exception &e){
                 error(e.what());
             }
+
+            simulation.addAction(this);
         }
 
         AddSettlement *AddSettlement::clone() const {}
@@ -80,12 +82,13 @@
         void AddFacility::act(Simulation &simulation) {
             try{
                 simulation.addFacility(FacilityType(facilityName, facilityCategory, price, lifeQualityScore, economyScore, environmentScore));
-                simulation.addAction(this);
                 complete();
             }
             catch(std::exception &e){
                 error(e.what());
             }
+
+            simulation.addAction(this);
         }
       
         AddFacility *AddFacility::clone() const {}
@@ -101,9 +104,10 @@
             else{
                 Plan plan = simulation.getPlan(planId);
                 plan.printStatus();
-                simulation.addAction(this);
                 complete();
             }
+
+            simulation.addAction(this);
         }
         PrintPlanStatus *PrintPlanStatus::clone() const {}
         const string PrintPlanStatus:: toString() const {}
@@ -128,11 +132,12 @@
                         error(e);
                     else{
                         plan.setSelectionPolicy(policy);
-                        simulation.addAction(this);
                         complete();
                     }
                 }
             }
+
+            simulation.addAction(this);
         }
 
         ChangePlanPolicy *ChangePlanPolicy::clone() const {}
@@ -157,6 +162,7 @@
         void Close::act(Simulation &simulation) {
             simulation.close();
             complete();
+            simulation.addAction(this);
         }
         Close *Close::clone() const {}
         const string Close::toString() const {}
