@@ -149,7 +149,9 @@
 //PrintActionsLog Class
         PrintActionsLog::PrintActionsLog(){}
         void PrintActionsLog::act(Simulation &simulation) {
-
+            simulation.printActionsLog();
+            complete();
+            simulation.addAction(this);
         }
 
         PrintActionsLog *PrintActionsLog::clone() const {}

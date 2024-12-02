@@ -312,4 +312,10 @@ class Auxiliary;
             isRunning = true;
         }
 
+        void Simulation::printActionsLog(){
+            for(BaseAction *action:actionsLog){
+                std::cout << action->toString() << std::endl;
+            }
+        }
+
 

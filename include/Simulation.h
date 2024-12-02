@@ -29,6 +29,7 @@ class Simulation {
         void step();
         void close();
         void open();
+        void printActionsLog();
 
     private:
         bool isRunning;
