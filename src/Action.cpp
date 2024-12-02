@@ -142,11 +142,11 @@
 
             simulation.addAction(this);
         }
-        PrintPlanStatus *PrintPlanStatus::clone() const {
+        PrintPlanStatus *PrintPlanStatus::clone() const {}
+        const string PrintPlanStatus:: toString() const {
             string str = "planStatus " + std::to_string(planId) + " " + statusToString();
             return str;
         }
-        const string PrintPlanStatus:: toString() const {}
 
 
 
@@ -224,4 +224,5 @@
         RestoreSimulation *RestoreSimulation::clone() const {}
         const string RestoreSimulation::toString() const {
             string str = "restore " + statusToString();
+            return str;
         }
