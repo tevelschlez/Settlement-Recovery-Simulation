@@ -4,13 +4,7 @@
 using std::string;
 using std::vector;
 
-class Settlement{
 
-private:
-        const string name;
-        SettlementType type;
-
-public:
         Settlement::Settlement(const string &name, SettlementType type):name(name),type(type){}
 
         const string &Settlement::getName() const{
@@ -33,4 +27,3 @@ public:
                 
                 return str;
         }
-};
