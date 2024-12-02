@@ -38,17 +38,21 @@ class Plan {
         ~Plan();//destructors
         Plan(Plan &other);//copy constructor
         Plan(Plan &&other) noexcept;//move copy constructor
+        Plan& operator=(const Plan& other) = delete;  // Copy assignment operator (disabled)
+        Plan& operator=(Plan&& other) = delete;      // Move assignment operator (disabled)
 
     private:
         int plan_id;
         const Settlement &settlement;
         SelectionPolicy *selectionPolicy; //What happens if we change this to a reference?
+        PlanStatus status;
         vector<Facility*> facilities;
         vector<Facility*> underConstruction;
         const vector<FacilityType> &facilityOptions;
-        PlanStatus status;
         int life_quality_score, economy_score, environment_score;
+        //
         const unsigned int constructionLimit;
         const int getConstructionLimit();
+        //
 
 };

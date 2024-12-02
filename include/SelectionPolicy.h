@@ -41,8 +41,7 @@ class BalancedSelection: public SelectionPolicy {
         int LifeQualityScore;
         int EconomyScore;
         int EnvironmentScore;
-        int minAmongScores(int sum_lifeQuality,int sum_economy, int sum_enviroment);
-        int maxAmongScores(int sum_lifeQuality,int sum_economy, int sum_enviroment);
+        
 };
 
 class EconomySelection: public SelectionPolicy {

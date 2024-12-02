@@ -12,7 +12,7 @@ using std::vector;
         }
 
         SettlementType Settlement::getType() const{
-            return type;
+                return type;
         }
 
         const string Settlement::toString() const{
