@@ -11,19 +11,20 @@ using std::vector;
                 return name;
         }
 
-        SettlementType getType() const{
-                return type;
+        SettlementType Settlement::getType() const{
+            return type;
         }
 
         const string Settlement::toString() const{
-                string str=name + " ";
+                string str=name+" ";
 
                 if(type== SettlementType::VILLAGE)
-                        str+="Village";
+                        str+="village";
                 else if(type ==  SettlementType::CITY)
-                        str+="City";
+                        str+="city";
                 else if(type == SettlementType::METROPOLIS)
-                        str+="Metropolis";
+                        str+="metropolis";
                 
                 return str;
         }
+

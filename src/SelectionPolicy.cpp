@@ -9,12 +9,8 @@ using std::vector;
         NaiveSelection::NaiveSelection():lastSelectedIndex(-1){}
 
         const FacilityType& NaiveSelection:: NaiveSelection::selectFacility(const vector<FacilityType>& facilitiesOptions) {
-
-            int size = facilitiesOptions.size();
-            if(lastSelectedIndex==size-1)
-                lastSelectedIndex=-1;
-
-            return facilitiesOptions[lastSelectedIndex+1];
+            lastSelectedIndex = static_cast<unsigned int>(lastSelectedIndex + 1) % facilitiesOptions.size();
+            return facilitiesOptions[lastSelectedIndex];
         }
 
         const string NaiveSelection:: toString() const {return "nve";}
@@ -96,17 +92,16 @@ using std::vector;
 //EconomySelection Class
 
 
-                EconomySelection::EconomySelection():lastSelectedIndex(0){ }
+                EconomySelection::EconomySelection():lastSelectedIndex(-1){ }
 
                 const FacilityType &EconomySelection::selectFacility(const vector<FacilityType> &facilitiesOptions)
                 {
-                    int size = facilitiesOptions.size();
+                    lastSelectedIndex = static_cast<unsigned int>(lastSelectedIndex + 1) % facilitiesOptions.size();
 
-                    while(facilitiesOptions[lastSelectedIndex].getCategory()!=FacilityCategory::ECONOMY){
-                        lastSelectedIndex = (lastSelectedIndex + 1) % size;
-                        }
-                        return facilitiesOptions[lastSelectedIndex];
-                        
+                    while(facilitiesOptions[lastSelectedIndex].getCategory()!=FacilityCategory::ECONOMY)
+                        lastSelectedIndex = static_cast<unsigned int>(lastSelectedIndex + 1) % facilitiesOptions.size();
+
+                    return facilitiesOptions[lastSelectedIndex];
                 }
 
                 const string EconomySelection::toString() const{return "eco";}
@@ -116,19 +111,18 @@ using std::vector;
 //SustainabilitySelection Class
 
 
-                    SustainabilitySelection::SustainabilitySelection():lastSelectedIndex(0) {}
+                    SustainabilitySelection::SustainabilitySelection():lastSelectedIndex(-1) {}
 
-                    const FacilityType &SustainabilitySelection::selectFacility(const vector<FacilityType> &facilitiesOptions){
-                    
-                        int size = facilitiesOptions.size();
+                    const FacilityType &SustainabilitySelection::selectFacility(const vector<FacilityType> &facilitiesOptions)
+                    {
+                        lastSelectedIndex = static_cast<unsigned int>(lastSelectedIndex + 1) % facilitiesOptions.size();
 
-                        while(facilitiesOptions[lastSelectedIndex].getCategory()!=FacilityCategory::ENVIRONMENT){
-                            lastSelectedIndex = (lastSelectedIndex + 1) % size;
-                        }
+                        while (facilitiesOptions[lastSelectedIndex].getCategory() != FacilityCategory::ENVIRONMENT)
+                            lastSelectedIndex = static_cast<unsigned int>(lastSelectedIndex + 1) % facilitiesOptions.size();
+
                         return facilitiesOptions[lastSelectedIndex];
-                        
                     }
-        
                     const string SustainabilitySelection::toString() const{ return "env";}
 
                     SustainabilitySelection *SustainabilitySelection::clone() const { return new SustainabilitySelection(*this); }
+
