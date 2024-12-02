@@ -48,7 +48,7 @@ class Plan {
         const vector<FacilityType> &facilityOptions;
         PlanStatus status;
         int life_quality_score, economy_score, environment_score;
-        const int constructionLimit;
+        const unsigned int constructionLimit;
         const int getConstructionLimit();
 
 };

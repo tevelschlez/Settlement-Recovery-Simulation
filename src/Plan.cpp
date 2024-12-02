@@ -27,37 +27,42 @@ using std::vector;
  
 
         void Plan::activateSelectionPolicy(){//choosing the next facility according to the selection polity and adding it to the under construction lst
-            int size = underConstruction.size();
 
             Facility* f_to_add=new Facility(selectionPolicy->selectFacility(facilityOptions),settlement.getName());
             addFacility(f_to_add);
 
-            if(size==constructionLimit)
+            if (underConstruction.size() == constructionLimit)
                 status = PlanStatus::BUSY;
         }
 
         //if a facility is getting off from the under constructuion to the operational it meand there is a free spot to add to the list
         void Plan::step(){
-            int size = underConstruction.size();
 
             while (status == PlanStatus::AVALIABLE)
             {
                 activateSelectionPolicy();
             }
 
-            for( int i=0; i<size;i++){
-                    FacilityStatus currentStatus= underConstruction[i]->step();
+
+            for (unsigned int i = 1; i < underConstruction.size(); i++)//not iterating over 0 since reducing i by 1 can cause a wrap around
+            {
+                FacilityStatus currentStatus = underConstruction[i]->step();
 
                 if(currentStatus==FacilityStatus::OPERATIONAL){
                     facilities.push_back(underConstruction[i]);
                     underConstruction.erase(underConstruction.begin() + i);
-                    i=i-1;
+                     --i;
 
-                    status == PlanStatus::AVALIABLE;
+                    status = PlanStatus::AVALIABLE;
                 }
             }
-        }
 
+            FacilityStatus currentStatus = underConstruction[0]->step();//safely iterating over the first item
+            if(currentStatus==FacilityStatus::OPERATIONAL){
+                facilities.push_back(underConstruction[0]);
+                underConstruction.erase(underConstruction.begin()+ 0);//will remove the first object if needed
+            }
+        }
 
         void Plan::printStatus(){
             string str = "PlanID:" + std::to_string(plan_id) + "\n";
@@ -139,7 +144,7 @@ using std::vector;
 
   
        const int Plan::getConstructionLimit(){
-            int construcion_limit;
+            unsigned int construcion_limit;
             if (settlement.getType() == SettlementType::VILLAGE)
                 construcion_limit = 1;
             if (settlement.getType() == SettlementType::CITY)

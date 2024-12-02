@@ -9,10 +9,10 @@ using std::vector;
         NaiveSelection::NaiveSelection():lastSelectedIndex(-1){}
 
         const FacilityType& NaiveSelection:: NaiveSelection::selectFacility(const vector<FacilityType>& facilitiesOptions) {
-            if(lastSelectedIndex==facilitiesOptions.size()-1)
+            if(lastSelectedIndex>-1 && static_cast<unsigned int>(lastSelectedIndex)==facilitiesOptions.size()-1)//performing casting only if lastSelectedIndex is a non-negative number
                 lastSelectedIndex=-1;
 
-            return facilitiesOptions[lastSelectedIndex+1];
+            return facilitiesOptions[++lastSelectedIndex];
         }
 
         const string NaiveSelection:: toString() const {return "nve";}
@@ -98,16 +98,14 @@ using std::vector;
 
                 const FacilityType &EconomySelection::selectFacility(const vector<FacilityType> &facilitiesOptions)
                 {
-                    int size = facilitiesOptions.size();
-
-                    if (lastSelectedIndex == size - 1)
+                    if (lastSelectedIndex>-1 &&static_cast<unsigned int>(lastSelectedIndex) == facilitiesOptions.size() - 1)
                         lastSelectedIndex = -1;
 
                     bool isFound = false;
 
-                    for (int i = lastSelectedIndex + 1; !isFound; i++)
+                    for (unsigned int i = lastSelectedIndex + 1; !isFound; i++)//for sure will be non-negative number
                     {
-                        i = (i % size);
+                        i = (i % facilitiesOptions.size());
 
                         if (facilitiesOptions[i].getCategory() == FacilityCategory::ECONOMY)
                         {
@@ -128,16 +126,14 @@ using std::vector;
 
                     const FacilityType &SustainabilitySelection::selectFacility(const vector<FacilityType> &facilitiesOptions)
                     {
-                        int size = facilitiesOptions.size();
-
-                        if (lastSelectedIndex == size - 1)
+                        if (lastSelectedIndex>-1&&static_cast<unsigned int>(lastSelectedIndex) == facilitiesOptions.size() - 1)
                             lastSelectedIndex = -1;
 
                         bool isFound = false;
 
-                        for (int i = lastSelectedIndex + 1; !isFound; i++)
+                        for (unsigned int i = lastSelectedIndex + 1; !isFound; i++)
                         {
-                            i = (i % size);
+                            i = (i % facilitiesOptions.size());
 
                             if (facilitiesOptions[i].getCategory() == FacilityCategory::ENVIRONMENT)
                             {
