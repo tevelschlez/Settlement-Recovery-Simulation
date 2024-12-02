@@ -4,6 +4,8 @@
 #include "Simulation.h"
 #include <iostream>
 
+extern Simulation *backup;
+
 //BaseAction Class
         BaseAction::BaseAction():errorMsg(""){}
         ActionStatus BaseAction::getStatus() const { return status; }
@@ -228,7 +230,15 @@
 //BackupSimulation Class
         BackupSimulation::BackupSimulation(){}
 
-        void BackupSimulation::act(Simulation &simulation) {}
+        void BackupSimulation::act(Simulation &simulation) {
+            if (backup != nullptr)
+            {
+                delete backup;
+            }
+            backup = new Simulation(simulation);
+            complete();
+            simulation.addAction(this);
+        }
 
         BackupSimulation *BackupSimulation::clone() const { return new BackupSimulation(*this); }
 
@@ -240,7 +250,15 @@
 //RestoreSimualtion Class
         RestoreSimulation::RestoreSimulation(){}
 
-        void RestoreSimulation::act(Simulation &simulation) {}
+        void RestoreSimulation::act(Simulation &simulation) {
+            if(backup==nullptr)
+                error("No backup available");
+            else{
+                simulation = *backup;
+                complete();
+            }
+            simulation.addAction(this);
+        }
 
         RestoreSimulation *RestoreSimulation::clone() const { return new RestoreSimulation(*this); }
 
