@@ -16,16 +16,6 @@ using std::vector;
 class Auxiliary;
 
 
-class Simulation{
-    private:
-        bool isRunning;
-        int planCounter; //For assigning unique plan IDs
-        vector<BaseAction*> actionsLog;
-        vector<Plan> plans;
-        vector<Settlement*> settlements;
-        vector<FacilityType> facilitiesOptions;
-
-    public:
         Simulation::Simulation(const string &configFilePath) : isRunning(false), planCounter(0) { loadConfigFile(configFilePath); }
 
         void Simulation::loadConfigFile(const string &configFilePath){
@@ -38,24 +28,17 @@ class Simulation{
             }
 
             string line;
-            while(std::getline(configFile,line)){
+            
+            while (std::getline(configFile, line))
+            {
                 vector<string> arguments = Auxiliary::parseArguments(line);
 
                 const string &initializerType = arguments[0];
 
-                if (initializerType == "Plan")
+                if (initializerType == "plan")
                 {
                     const string &settlementName = arguments[1];
-                    SelectionPolicy *selection;
-
-                    if (arguments[2] == "nve")
-                        selection = new NaiveSelection();
-                    else if (arguments[2] == "bal")
-                        selection = new BalancedSelection(0, 0, 0);
-                    else if (arguments[2] == "eco")
-                        selection = new EconomySelection();
-                    else if (arguments[2] == "env")
-                        selection = new SustainabilitySelection();
+                    SelectionPolicy *selection = getSelectionPolicy(arguments[2]);
 
                     addPlan(getSettlement(settlementName), selection);
                 }
@@ -81,7 +64,7 @@ class Simulation{
                     addSettlement(new Settlement(settlementName, settlementType));
                 }
 
-                if (initializerType == "Facility")
+                if (initializerType == "facility")
                 {
                     const string &facilityName = arguments[1];
                     FacilityCategory category;
@@ -131,21 +114,12 @@ class Simulation{
 
                 const string &actionType = arguments[0];
 
-                if(actionType=="Plan"){
-                 const string &settlementName = arguments[1];
-                    SelectionPolicy *selection;
+                if(actionType=="plan"){
+                    const string &settlementName = arguments[1];
+                    const string &policy = arguments[2];
 
-                    if(arguments[2]=="nve")
-                        selection = new NaiveSelection();
-                    else if (arguments[2]=="bal")
-                        selection = new BalancedSelection(0,0,0);
-                  else if (arguments[2]=="eco")
-                        selection = new EconomySelection();
-                    else if (arguments[2]=="env")
-                        selection=new SustainabilitySelection();
+                    action = new AddPlan(settlementName, policy);
 
-                     action = new AddPlan(settlementName, arguments[2]);
-                 
               }
 
                 if (actionType=="settlement"){
@@ -168,7 +142,7 @@ class Simulation{
                         
                 }
 
-                if (actionType=="Facility"){
+                if (actionType=="facility"){
                     const string &facilityName = arguments[1];
                     FacilityCategory category;
                     const int &price = stoi(arguments[3]);
@@ -226,6 +200,8 @@ class Simulation{
 
                 if(actionType=="restore"){
                     action = new RestoreSimulation();
+                    action->act(*this);
+                    continue;
                 }
 
                 action->act(*this);
@@ -234,9 +210,10 @@ class Simulation{
 
         void Simulation::addPlan(const Settlement &settlement, SelectionPolicy *selectionPolicy)
         {
-            if(!isSettlementExists)
-                std::cout << "settlement does not exist"<<std::endl;
-            else{
+            if(!isSettlementExists(settlement.getName())||selectionPolicy==nullptr)
+                throw std::invalid_argument("Cannot create this plan");
+            else
+            {
                 planCounter++;
                 plans.push_back(Plan(planCounter, settlement, selectionPolicy, facilitiesOptions));
             }
@@ -248,15 +225,15 @@ class Simulation{
         }
 
         bool Simulation::addSettlement(Settlement *settlement){
-            if(isSettlementExists)
-                std::cout << "settlement already exist - choose a uniuqe name";
+            if(isSettlementExists(settlement->getName()))
+                throw std::invalid_argument("Settlement already exists");
             else
                 settlements.push_back(settlement);
         }
 
         bool Simulation::addFacility(FacilityType facility){
-            if (isFacilityExists)
-                std::cout << "facility already exist - choose a uniuqe name";
+            if (isFacilityExists(facility.getName()))
+                throw std::invalid_argument("Facility already exists");
             else
               facilitiesOptions.push_back(facility);
         }
@@ -276,6 +253,36 @@ class Simulation{
             }
             return false;
         }
+
+        bool Simulation::isPlanExists(const int &ID){
+            for (auto plan : plans)
+            {
+                if (plan.getID() == ID)
+                    return true;
+            }
+            return false;
+        }
+
+
+         SelectionPolicy *Simulation::getSelectionPolicy(const string &policy){//returning null if the policy does not exist
+             SelectionPolicy *selection;
+
+             if (policy == "nve")
+                 selection = new NaiveSelection();
+             else if (policy == "bal")
+                 selection = new BalancedSelection(0, 0, 0);
+             else if (policy == "eco")
+                 selection = new EconomySelection();
+             else if (policy == "env")
+                 selection = new SustainabilitySelection();
+             else
+             {
+                 selection = nullptr;
+             }
+
+             return selection;
+         }
+
 
         Settlement &Simulation::getSettlement(const string &settlementName){
             for(auto &settlement:settlements){
@@ -298,10 +305,19 @@ class Simulation{
         }
 
         void Simulation::close(){
+            for(Plan plan :plans){
+                std::cout << plan.toString() << std::endl;
+            }
             isRunning = false;
         }
         void Simulation::open(){
             isRunning = true;
         }
-};
+
+        void Simulation::printActionsLog(){
+            for(BaseAction *action:actionsLog){
+                std::cout << action->toString() << std::endl;
+            }
+        }
+
 

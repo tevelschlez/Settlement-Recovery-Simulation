@@ -6,8 +6,6 @@
 #include "SelectionPolicy.h"
 using std::vector;
 
-class Plan {
-    public:
 
         //in this class there is a need to implement the 'Rule Of 5": destructor, copy constructor, copy assignment operator, move constructor, move assignment operator
 
@@ -25,54 +23,80 @@ class Plan {
             return environment_score;
         }
 
-        void Plan::setSelectionPolicy(SelectionPolicy *selectionPolicy) { this->selectionPolicy = selectionPolicy; }
- 
+        void Plan::setSelectionPolicy(SelectionPolicy *selectionPolicy) {
+             string str = "planID: " + std::to_string(plan_id) + "\n";
+             str += "previousPolicy: " + this->selectionPolicy->toString() + "\n";
+             str += "newPolicy: " + selectionPolicy->toString() + "\n";
+             this->selectionPolicy = selectionPolicy;
+             std::cout << str << std::endl;
+        }
 
         void Plan::activateSelectionPolicy(){//choosing the next facility according to the selection polity and adding it to the under construction lst
 
             Facility* f_to_add=new Facility(selectionPolicy->selectFacility(facilityOptions),settlement.getName());
             addFacility(f_to_add);
 
-            if(underConstruction.size()==constructionLimit)
+            if (underConstruction.size() == constructionLimit)
                 status = PlanStatus::BUSY;
         }
 
         //if a facility is getting off from the under constructuion to the operational it meand there is a free spot to add to the list
-        void step(){
+        void Plan::step(){
 
             while (status == PlanStatus::AVALIABLE)
             {
                 activateSelectionPolicy();
             }
 
-            for( int i=0; i<underConstruction.size();i++){
-                underConstruction[i]->step();
 
-                if(underConstruction[i]->getStatus()==FacilityStatus::OPERATIONAL){
+            for (unsigned int i = 1; i < underConstruction.size(); i++)//not iterating over 0 since reducing i by 1 can cause a wrap around
+            {
+                FacilityStatus currentStatus = underConstruction[i]->step();
+
+                if(currentStatus==FacilityStatus::OPERATIONAL){
                     facilities.push_back(underConstruction[i]);
                     underConstruction.erase(underConstruction.begin() + i);
-                    i=i-1;
+                     --i;
 
-                    status == PlanStatus::AVALIABLE;
+                    status = PlanStatus::AVALIABLE;
                 }
+            }
+
+            FacilityStatus currentStatus = underConstruction[0]->step();//safely iterating over the first item
+            if(currentStatus==FacilityStatus::OPERATIONAL){
+                facilities.push_back(underConstruction[0]);
+                underConstruction.erase(underConstruction.begin()+ 0);//will remove the first object if needed
             }
         }
 
-
-        void printStatus(){
-            if(status==PlanStatus::AVALIABLE)
-                std::cout << "available" << std::endl;
+        void Plan::printStatus(){
+            string str = "PlanID:" + std::to_string(plan_id) + "\n";
+            str += "SettlementName:" + settlement.getName() + "\n";
+            str += "PlanStatus:";
+            if (status == PlanStatus::AVALIABLE)
+                str += "AVAILABLE";
             else
-                std::cout << "busy" << std::endl;
+                str += "BUSY";
+            str += "\nSelectionPolicy:" + selectionPolicy->toString() + "\n";
+            str += "LifeQualityScore:" + std::to_string(life_quality_score) + "\n";
+            str += "EconomyScore:" + std::to_string(economy_score) + "\n";
+            str += "EnviromentScore:" + std::to_string(environment_score) + "\n";
+
+            for (auto *facility : facilities)
+                str += facility->toString();
+            for (auto *facility : underConstruction)
+                str += facility->toString();
+
+            std::cout << str << std::endl;
         }
-        
+
         const vector<Facility*> &Plan:: getFacilities() const{
             return facilities;
         }
 
         //if the length of underConstruction is equal to constuction_limit we can not add a plan
 
-        void addFacility(Facility* facility){//update the plan scores according to the facility
+        void Plan::addFacility(Facility* facility){//update the plan scores according to the facility
             if(facility->getStatus()==FacilityStatus::UNDER_CONSTRUCTIONS && status==PlanStatus::AVALIABLE)
                 underConstruction.push_back(facility);
 
@@ -87,33 +111,19 @@ class Plan {
             environment_score += facility->getEnvironmentScore();
         }
 
-        const string toString() const{
-            string str = "plan id:" + std::to_string(plan_id) + " selection policy:" + selectionPolicy->toString();
-            if(status==PlanStatus::AVALIABLE)
-                str += " available";
-            else
-                str += " busy";
-
-            str += " life_quality_score:" + std::to_string(life_quality_score) += " economy_score:" + std::to_string(economy_score) + " enviroment_score:" + std::to_string(environment_score);
-
-            str += " operational_facilities:\n";
-
-            for (int i = 0; i < facilities.size(); i++)
-            {
-                str += facilities[i]->toString()+"\n";
-            }
-
-            str += "underConstruction_facilities:\n";
-
-            for (int i = 0; i < underConstruction.size();i++){
-                str += underConstruction[i]->toString() + "\n";
-            }
-
+        const string Plan::toString() const{
+            string str = "PlanID:" + std::to_string(plan_id) + "\nSettlementName:" + settlement.getName() + "\nLifeQuality_Score:" + std::to_string(life_quality_score) + "\nEconomy_Score:" + std::to_string(economy_score) + "\nEnviroment_Score:" + std::to_string(environment_score);
             return str;
         }
 
-        const int getID(){
+        const int Plan::getID(){
             return plan_id;
+        }
+
+        bool Plan::comparePolicy(const string &policyToCompare){
+            if(policyToCompare==selectionPolicy->toString())
+                return true;
+            return false;
         }
 
         //rule of 5
@@ -137,18 +147,9 @@ class Plan {
 
         Plan::Plan(Plan &&other) noexcept : plan_id(other.plan_id), settlement(other.settlement), selectionPolicy(other.selectionPolicy),facilityOptions(other.facilityOptions), status(other.status), life_quality_score(other.life_quality_score), economy_score(other.economy_score), environment_score(other.environment_score) ,facilities(std::move(other.facilities)),underConstruction(std::move(other.underConstruction)),constructionLimit(std::move(other.constructionLimit)){}
 
-    private:
-        int plan_id;
-        const Settlement &settlement;
-        SelectionPolicy *selectionPolicy; //What happens if we change this to a reference?
-        PlanStatus status;
-        vector<Facility*> facilities;
-        vector<Facility*> underConstruction;
-        const vector<FacilityType> &facilityOptions;
-        int life_quality_score, economy_score, environment_score;
-        const int constructionLimit;
+  
        const int Plan::getConstructionLimit(){
-            int construcion_limit;
+            unsigned int construcion_limit;
             if (settlement.getType() == SettlementType::VILLAGE)
                 construcion_limit = 1;
             if (settlement.getType() == SettlementType::CITY)
@@ -156,5 +157,4 @@ class Plan {
             if (settlement.getType() == SettlementType::METROPOLIS)
                 construcion_limit = 3;
             return construcion_limit;
-        }
-};
+       }

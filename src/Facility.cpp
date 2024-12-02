@@ -1,13 +1,11 @@
 #include "Facility.h"
-#pragma once
 #include <string>
 #include <vector>
 #include <sstream>
 using std::string;
 using std::vector;
 
-class FacilityType {
-    public:
+//FacilityType Class
         FacilityType::FacilityType(const string &name, const FacilityCategory category, const int price, const int lifeQuality_score, const int economy_score, const int environment_score):name(name),category(category),price(price),lifeQuality_score(lifeQuality_score),economy_score(economy_score),environment_score(environment_score){}
 
         const string &FacilityType::getName() const{
@@ -31,20 +29,9 @@ class FacilityType {
             return category;
         }
 
-    protected:
-        const string name;
-        const FacilityCategory category;
-        const int price;
-        const int lifeQuality_score;
-        const int economy_score;
-        const int environment_score;
-};
 
+//Facility Class
 
-
-class Facility: public FacilityType {
-
-    public:
         Facility::Facility(const string &name, const string &settlementName, const FacilityCategory category, const int price, const int lifeQuality_score, const int economy_score, const int environment_score):FacilityType(name,category,price,lifeQuality_score,economy_score,environment_score),settlementName(settlementName),status(FacilityStatus::UNDER_CONSTRUCTIONS),timeLeft(price){
         }
 
@@ -64,6 +51,8 @@ class Facility: public FacilityType {
 
             if(timeLeft==0)
                 status=FacilityStatus::OPERATIONAL;
+
+            return status;
         }
 
         void Facility::setStatus(FacilityStatus status){
@@ -74,31 +63,12 @@ class Facility: public FacilityType {
             return status;
         }
 
-        const string toString() const{
-            string str=name+" "+settlementName+" ";
-
-            if(category==FacilityCategory::ECONOMY)
-                str+="economy ";
-            else if (category == FacilityCategory::ENVIRONMENT)
-                str+="enviroment ";
-            else 
-                str+="life quality ";
-
-            str+=std::to_string(price)+" life_quality_score:"+std::to_string(lifeQuality_score)+" economy_score:"+std::to_string(economy_score)+" enviroment_score:"+std::to_string(environment_score);
-
+        const string Facility::toString() const{
+            string str = "FacilityName:" + name + "\n";
             if(status==FacilityStatus::OPERATIONAL)
-                str+="operational";
-            else    
-                str+="under_construction";
+                str += "OPERATIONAL\n";
+            if(status==FacilityStatus::UNDER_CONSTRUCTIONS)
+                str += "UNDER_CONSTRUCTION\n";
 
-           str+=std::to_string(timeLeft);
-
-           return str;
-            
+            return str;
         }
-
-    private:
-        const string settlementName;
-        FacilityStatus status;
-        int timeLeft;
-};
