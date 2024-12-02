@@ -66,11 +66,13 @@
             string str = "plan " + settlementName + " " + selectionPolicy+" "+statusToString();
             return str;
         }
-        AddPlan *AddPlan::clone() const {}
+
+        AddPlan *AddPlan::clone() const { return new AddPlan(*this); }
 
 
 
-//AddSettlement
+
+        // AddSettlement
         AddSettlement::AddSettlement(const string &settlementName,SettlementType settlementType):settlementName(settlementName),settlementType(settlementType){}
         
         void AddSettlement::act(Simulation &simulation) {
@@ -85,7 +87,9 @@
             simulation.addAction(this);
         }
 
-        AddSettlement *AddSettlement::clone() const {}
+        AddSettlement *AddSettlement::clone() const { return new AddSettlement(*this); }
+
+
         const string AddSettlement:: toString() const {
             string str = "settlement " + settlementName + " ";
             if(settlementType==SettlementType::CITY)
@@ -98,6 +102,8 @@
             str += statusToString();
             return str;
         }
+
+
 
 //AddFacility Class
         AddFacility::AddFacility(const string &facilityName, const FacilityCategory facilityCategory, const int price, const int lifeQualityScore, const int economyScore, const int environmentScore):facilityName(facilityName),facilityCategory(facilityCategory),price(price),lifeQualityScore(lifeQualityScore),economyScore(economyScore),environmentScore(environmentScore){}
@@ -113,8 +119,10 @@
 
             simulation.addAction(this);
         }
-      
-        AddFacility *AddFacility::clone() const {}
+
+        AddFacility *AddFacility::clone() const { return new AddFacility(*this); }
+
+
         const string AddFacility:: toString() const {
             string str = "facility " + facilityName;
             if(facilityCategory==FacilityCategory::LIFE_QUALITY)
@@ -127,6 +135,8 @@
             str += std::to_string(price) + " " + std::to_string(lifeQualityScore) + " " + std::to_string(economyScore) + " " + std::to_string(environmentScore)+" "+statusToString();
             return str; 
         }
+
+
 
 //PrintPlanStatus Class
         PrintPlanStatus::PrintPlanStatus(int planId):planId(planId){}
@@ -142,7 +152,9 @@
 
             simulation.addAction(this);
         }
-        PrintPlanStatus *PrintPlanStatus::clone() const {}
+        PrintPlanStatus *PrintPlanStatus::clone() const { return new PrintPlanStatus(*this); }
+
+
         const string PrintPlanStatus:: toString() const {
             string str = "planStatus " + std::to_string(planId) + " " + statusToString();
             return str;
@@ -176,7 +188,9 @@
             simulation.addAction(this);
         }
 
-        ChangePlanPolicy *ChangePlanPolicy::clone() const {}
+        ChangePlanPolicy *ChangePlanPolicy::clone() const { return new ChangePlanPolicy(*this); }
+
+
         const string ChangePlanPolicy::toString() const {
             string str = "changePolicy " + std::to_string(planId) + " " + newPolicy + " " + statusToString();
             return str;
@@ -190,7 +204,8 @@
             simulation.addAction(this);
         }
 
-        PrintActionsLog *PrintActionsLog::clone() const {}
+        PrintActionsLog *PrintActionsLog::clone() const { return new PrintActionsLog(*this); }
+
         const string PrintActionsLog:: toString() const {
             string str = "log "+statusToString();
             return str;
@@ -203,7 +218,8 @@
             complete();
             simulation.addAction(this);
         }
-        Close *Close::clone() const {}
+        Close *Close::clone() const { return new Close(*this); }
+
         const string Close::toString() const {
             string str = "close " + statusToString();
             return str;
@@ -211,8 +227,11 @@
 
 //BackupSimulation Class
         BackupSimulation::BackupSimulation(){}
+
         void BackupSimulation::act(Simulation &simulation) {}
-        BackupSimulation *BackupSimulation::clone() const {}
+
+        BackupSimulation *BackupSimulation::clone() const { return new BackupSimulation(*this); }
+
         const string BackupSimulation::toString() const {
             string str = "backup " + statusToString();
             return str;
@@ -220,8 +239,11 @@
 
 //RestoreSimualtion Class
         RestoreSimulation::RestoreSimulation(){}
+
         void RestoreSimulation::act(Simulation &simulation) {}
-        RestoreSimulation *RestoreSimulation::clone() const {}
+
+        RestoreSimulation *RestoreSimulation::clone() const { return new RestoreSimulation(*this); }
+
         const string RestoreSimulation::toString() const {
             string str = "restore " + statusToString();
             return str;
