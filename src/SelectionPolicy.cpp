@@ -9,10 +9,8 @@ using std::vector;
         NaiveSelection::NaiveSelection():lastSelectedIndex(-1){}
 
         const FacilityType& NaiveSelection:: NaiveSelection::selectFacility(const vector<FacilityType>& facilitiesOptions) {
-            if(lastSelectedIndex>-1 && static_cast<unsigned int>(lastSelectedIndex)==facilitiesOptions.size()-1)//performing casting only if lastSelectedIndex is a non-negative number
-                lastSelectedIndex=-1;
-
-            return facilitiesOptions[++lastSelectedIndex];
+            lastSelectedIndex = static_cast<unsigned int>(lastSelectedIndex + 1) % facilitiesOptions.size();
+            return facilitiesOptions[lastSelectedIndex];
         }
 
         const string NaiveSelection:: toString() const {return "nve";}
@@ -98,21 +96,12 @@ using std::vector;
 
                 const FacilityType &EconomySelection::selectFacility(const vector<FacilityType> &facilitiesOptions)
                 {
-                    if (lastSelectedIndex>-1 &&static_cast<unsigned int>(lastSelectedIndex) == facilitiesOptions.size() - 1)
-                        lastSelectedIndex = -1;
+                    lastSelectedIndex = static_cast<unsigned int>(lastSelectedIndex + 1) % facilitiesOptions.size();
 
-                    bool isFound = false;
+                    while(facilitiesOptions[lastSelectedIndex].getCategory()!=FacilityCategory::ECONOMY)
+                        lastSelectedIndex = static_cast<unsigned int>(lastSelectedIndex + 1) % facilitiesOptions.size();
 
-                    for (unsigned int i = lastSelectedIndex + 1; !isFound; i++)//for sure will be non-negative number
-                    {
-                        i = (i % facilitiesOptions.size());
-
-                        if (facilitiesOptions[i].getCategory() == FacilityCategory::ECONOMY)
-                        {
-                            lastSelectedIndex = i;
-                            return facilitiesOptions[i];
-                        }
-                    }
+                    return facilitiesOptions[lastSelectedIndex];
                 }
 
                 const string EconomySelection::toString() const{return "eco";}
@@ -126,21 +115,12 @@ using std::vector;
 
                     const FacilityType &SustainabilitySelection::selectFacility(const vector<FacilityType> &facilitiesOptions)
                     {
-                        if (lastSelectedIndex>-1&&static_cast<unsigned int>(lastSelectedIndex) == facilitiesOptions.size() - 1)
-                            lastSelectedIndex = -1;
+                        lastSelectedIndex = static_cast<unsigned int>(lastSelectedIndex + 1) % facilitiesOptions.size();
 
-                        bool isFound = false;
+                        while (facilitiesOptions[lastSelectedIndex].getCategory() != FacilityCategory::ENVIRONMENT)
+                            lastSelectedIndex = static_cast<unsigned int>(lastSelectedIndex + 1) % facilitiesOptions.size();
 
-                        for (unsigned int i = lastSelectedIndex + 1; !isFound; i++)
-                        {
-                            i = (i % facilitiesOptions.size());
-
-                            if (facilitiesOptions[i].getCategory() == FacilityCategory::ENVIRONMENT)
-                            {
-                                lastSelectedIndex = i;
-                                return facilitiesOptions[i];
-                            }
-                        }
+                        return facilitiesOptions[lastSelectedIndex];
                     }
                     const string SustainabilitySelection::toString() const{ return "env";}
 
