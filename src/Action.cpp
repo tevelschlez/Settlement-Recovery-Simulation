@@ -17,6 +17,15 @@
 
         const string &BaseAction::getErrorMsg() const { return errorMsg; }
 
+        const string BaseAction::statusToString() const{
+            string str="";
+            if (getStatus() == ActionStatus::COMPLETED)
+                str += "COMPLETED";
+            else if (getStatus() == ActionStatus::ERROR)
+                str + "ERROR";
+            return str;
+        }
+
 
 //SimulateStep Class
 
@@ -29,7 +38,11 @@
             simulation.addAction(this);
         }
 
-        const string SimulateStep::toString() const {}
+        const string SimulateStep::toString() const {
+            string str = "step " + std::to_string(numOfSteps) + " " + statusToString();
+            return str;
+        }
+
         SimulateStep *SimulateStep::clone() const { return new SimulateStep(*this); }
 
 
@@ -49,7 +62,10 @@
             simulation.addAction(this);
         }
 
-        const string AddPlan::toString() const {}
+        const string AddPlan::toString() const {
+            string str = "plan " + settlementName + " " + selectionPolicy+" "+statusToString();
+            return str;
+        }
         AddPlan *AddPlan::clone() const {}
 
 
@@ -70,11 +86,18 @@
         }
 
         AddSettlement *AddSettlement::clone() const {}
-        const string AddSettlement:: toString() const {}
-        
+        const string AddSettlement:: toString() const {
+            string str = "settlement " + settlementName + " ";
+            if(settlementType==SettlementType::CITY)
+                str += "CITY ";
+            else if(settlementType==SettlementType::METROPOLIS)
+                str += "METROPOLIS ";
+            else
+                str += "VILLAGE ";
 
-
-
+            str += statusToString();
+            return str;
+        }
 
 //AddFacility Class
         AddFacility::AddFacility(const string &facilityName, const FacilityCategory facilityCategory, const int price, const int lifeQualityScore, const int economyScore, const int environmentScore):facilityName(facilityName),facilityCategory(facilityCategory),price(price),lifeQualityScore(lifeQualityScore),economyScore(economyScore),environmentScore(environmentScore){}
@@ -92,8 +115,18 @@
         }
       
         AddFacility *AddFacility::clone() const {}
-        const string AddFacility:: toString() const {}
+        const string AddFacility:: toString() const {
+            string str = "facility " + facilityName;
+            if(facilityCategory==FacilityCategory::LIFE_QUALITY)
+                str += " 0 ";
+            else if (facilityCategory == FacilityCategory::ECONOMY)
+                str += " 1 ";
+            else 
+                str += " 2 ";
 
+            str += std::to_string(price) + " " + std::to_string(lifeQualityScore) + " " + std::to_string(economyScore) + " " + std::to_string(environmentScore)+" "+statusToString();
+            return str; 
+        }
 
 //PrintPlanStatus Class
         PrintPlanStatus::PrintPlanStatus(int planId):planId(planId){}
@@ -109,7 +142,10 @@
 
             simulation.addAction(this);
         }
-        PrintPlanStatus *PrintPlanStatus::clone() const {}
+        PrintPlanStatus *PrintPlanStatus::clone() const {
+            string str = "planStatus " + std::to_string(planId) + " " + statusToString();
+            return str;
+        }
         const string PrintPlanStatus:: toString() const {}
 
 
@@ -141,10 +177,10 @@
         }
 
         ChangePlanPolicy *ChangePlanPolicy::clone() const {}
-        const string ChangePlanPolicy::toString() const {}
-
-
-
+        const string ChangePlanPolicy::toString() const {
+            string str = "changePolicy " + std::to_string(planId) + " " + newPolicy + " " + statusToString();
+            return str;
+        }
 
 //PrintActionsLog Class
         PrintActionsLog::PrintActionsLog(){}
@@ -155,9 +191,10 @@
         }
 
         PrintActionsLog *PrintActionsLog::clone() const {}
-        const string PrintActionsLog:: toString() const {}
-
-
+        const string PrintActionsLog:: toString() const {
+            string str = "log "+statusToString();
+            return str;
+        }
 
 //Close Class
         Close::Close(){}
@@ -167,21 +204,24 @@
             simulation.addAction(this);
         }
         Close *Close::clone() const {}
-        const string Close::toString() const {}
-
-
+        const string Close::toString() const {
+            string str = "close " + statusToString();
+            return str;
+        }
 
 //BackupSimulation Class
         BackupSimulation::BackupSimulation(){}
         void BackupSimulation::act(Simulation &simulation) {}
         BackupSimulation *BackupSimulation::clone() const {}
-        const string BackupSimulation::toString() const {}
-
-
+        const string BackupSimulation::toString() const {
+            string str = "backup " + statusToString();
+            return str;
+        }
 
 //RestoreSimualtion Class
         RestoreSimulation::RestoreSimulation(){}
         void RestoreSimulation::act(Simulation &simulation) {}
         RestoreSimulation *RestoreSimulation::clone() const {}
-        const string RestoreSimulation::toString() const {}
-        
+        const string RestoreSimulation::toString() const {
+            string str = "restore " + statusToString();
+        }

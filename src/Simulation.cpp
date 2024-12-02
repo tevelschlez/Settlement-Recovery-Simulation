@@ -35,7 +35,7 @@ class Auxiliary;
 
                 const string &initializerType = arguments[0];
 
-                if (initializerType == "Plan")
+                if (initializerType == "plan")
                 {
                     const string &settlementName = arguments[1];
                     SelectionPolicy *selection = getSelectionPolicy(arguments[2]);
@@ -64,7 +64,7 @@ class Auxiliary;
                     addSettlement(new Settlement(settlementName, settlementType));
                 }
 
-                if (initializerType == "Facility")
+                if (initializerType == "facility")
                 {
                     const string &facilityName = arguments[1];
                     FacilityCategory category;
@@ -114,7 +114,7 @@ class Auxiliary;
 
                 const string &actionType = arguments[0];
 
-                if(actionType=="Plan"){
+                if(actionType=="plan"){
                     const string &settlementName = arguments[1];
                     const string &policy = arguments[2];
 
@@ -142,7 +142,7 @@ class Auxiliary;
                         
                 }
 
-                if (actionType=="Facility"){
+                if (actionType=="facility"){
                     const string &facilityName = arguments[1];
                     FacilityCategory category;
                     const int &price = stoi(arguments[3]);

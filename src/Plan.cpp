@@ -23,8 +23,13 @@ using std::vector;
             return environment_score;
         }
 
-        void Plan::setSelectionPolicy(SelectionPolicy *selectionPolicy) { this->selectionPolicy = selectionPolicy; }
- 
+        void Plan::setSelectionPolicy(SelectionPolicy *selectionPolicy) {
+             string str = "planID: " + std::to_string(plan_id) + "\n";
+             str += "previousPolicy: " + this->selectionPolicy->toString() + "\n";
+             str += "newPolicy: " + selectionPolicy->toString() + "\n";
+             this->selectionPolicy = selectionPolicy;
+             std::cout << str << std::endl;
+        }
 
         void Plan::activateSelectionPolicy(){//choosing the next facility according to the selection polity and adding it to the under construction lst
 
