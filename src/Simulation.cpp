@@ -200,6 +200,8 @@ class Auxiliary;
 
                 if(actionType=="restore"){
                     action = new RestoreSimulation();
+                    action->act(*this);
+                    continue;
                 }
 
                 action->act(*this);
