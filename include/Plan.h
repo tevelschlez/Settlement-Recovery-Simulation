@@ -31,12 +31,18 @@ class Plan {
         //
         void activateSelectionPolicy();
         
-        const int getID();
+        int getID() const;
+
+        const Settlement &getSettlement() const;
+
+        const vector<Facility*> &getUnderConstruction() const;
+
+        SelectionPolicy* getSelectionPolicy() const;
         //
 
         //rule of 5:
         ~Plan();//destructors
-        Plan(Plan &other);//copy constructor
+        Plan(const Plan &other);//copy constructor
         Plan(Plan &&other) noexcept;//move copy constructor
         Plan& operator=(const Plan& other) = delete;  // Copy assignment operator (disabled)
         Plan& operator=(Plan&& other) = delete;      // Move assignment operator (disabled)
