@@ -302,8 +302,9 @@ class Auxiliary;
                 if(plan.getID()==planID)
                     return plan;
             }
-            std::cout << "Plan does not exist" << std::endl;
+            throw std::invalid_argument("Plan does not exist");
         }
+        
 
         void Simulation::step(){//should iterate over all plans and perform step for each of them
         //in the action class, this method will be performed as many times as the user decides
@@ -383,7 +384,10 @@ class Auxiliary;
                     settlements.push_back(new Settlement(*settlement));
                 }
 
-                facilitiesOptions = other.facilitiesOptions;
+                facilitiesOptions.clear();
+                for (const auto &facility : other.facilitiesOptions) {
+                    facilitiesOptions.push_back(facility);
+                }
         
                 for (const Plan &plan : other.plans) {
                     Settlement &settlement = getSettlement(plan.getSettlement().getName());
