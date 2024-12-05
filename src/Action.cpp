@@ -11,10 +11,7 @@ extern Simulation *backup;
         
         ActionStatus BaseAction::getStatus() const { return status; }
 
-        void BaseAction::complete() {
-             status = ActionStatus::COMPLETED; 
-             errorMsg.clear();
-        }
+        void BaseAction::complete() {status = ActionStatus::COMPLETED; }
 
         void BaseAction::error(string errorMsg) { this->errorMsg = errorMsg;
             status = ActionStatus::ERROR;
@@ -235,7 +232,8 @@ extern Simulation *backup;
         BackupSimulation::BackupSimulation(){}
 
         void BackupSimulation::act(Simulation &simulation) {
-            if (backup != nullptr){
+            if (backup != nullptr)
+            {
                 delete backup;
             }
             backup = new Simulation(simulation);
