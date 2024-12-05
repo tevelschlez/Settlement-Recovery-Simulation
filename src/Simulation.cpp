@@ -17,7 +17,7 @@ class Auxiliary;
 
 
         Simulation::Simulation(const string &configFilePath) 
-        : isRunning(false), planCounter(0), actionsLog(), plans(), settlements(), facilitiesOptions() { 
+        : isRunning(false), planCounter(-1), actionsLog(), plans(), settlements(), facilitiesOptions() { 
             loadConfigFile(configFilePath); 
         }
         void Simulation::loadConfigFile(const string &configFilePath){
