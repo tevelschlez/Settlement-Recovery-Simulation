@@ -16,20 +16,36 @@ class Plan {
         const int getlifeQualityScore() const;
         const int getEconomyScore() const;
         const int getEnvironmentScore() const;
+
+        //
+        bool comparePolicy(const string &policyToCompare);
+        //
+
         void setSelectionPolicy(SelectionPolicy *selectionPolicy);
         void step();
         void printStatus();
         const vector<Facility*> &getFacilities() const;
         void addFacility(Facility* facility);
         const string toString() const;
-        void activateSelectionPolicy();
 
-        const int getID();
+        //
+        void activateSelectionPolicy();
+        
+        int getID() const;
+
+        const Settlement &getSettlement() const;
+
+        const vector<Facility*> &getUnderConstruction() const;
+
+        SelectionPolicy* getSelectionPolicy() const;
+        //
 
         //rule of 5:
         ~Plan();//destructors
-        Plan(Plan &other);//copy constructor
-        Plan(Plan &&other);//move copy constructor
+        Plan(const Plan &other);//copy constructor
+        Plan(Plan &&other) noexcept;//move copy constructor
+        Plan& operator=(const Plan& other) = delete;  // Copy assignment operator (disabled)
+        Plan& operator=(Plan&& other) = delete;      // Move assignment operator (disabled)
 
     private:
         int plan_id;
@@ -40,7 +56,9 @@ class Plan {
         vector<Facility*> underConstruction;
         const vector<FacilityType> &facilityOptions;
         int life_quality_score, economy_score, environment_score;
-        const int constructionLimit;
+        //
+        const unsigned int constructionLimit;
         const int getConstructionLimit();
+        //
 
 };
