@@ -7,10 +7,11 @@
 extern Simulation *backup;
 
 //BaseAction Class
-        BaseAction::BaseAction():errorMsg(""){}
+        BaseAction::BaseAction() : errorMsg(""), status(ActionStatus::COMPLETED) {}
+        
         ActionStatus BaseAction::getStatus() const { return status; }
 
-        void BaseAction::complete() { status = ActionStatus::COMPLETED; }
+        void BaseAction::complete() {status = ActionStatus::COMPLETED; }
 
         void BaseAction::error(string errorMsg) { this->errorMsg = errorMsg;
             status = ActionStatus::ERROR;

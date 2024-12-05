@@ -115,9 +115,24 @@ using std::vector;
         return str;
     }
 
-    const int Plan::getID(){
+    int Plan::getID() const{
         return plan_id;
     }
+
+    // new methods
+    const Settlement &Plan::getSettlement() const{
+        return settlement;
+    }
+
+    const vector<Facility*> &Plan::getUnderConstruction() const{
+        return underConstruction;
+    }
+    SelectionPolicy* Plan::getSelectionPolicy() const{
+        return selectionPolicy;
+    }
+    //
+
+
 
     bool Plan::comparePolicy(const string &policyToCompare){
         if(policyToCompare==selectionPolicy->toString())
@@ -125,7 +140,7 @@ using std::vector;
         return false;
     }
 
-    //rule of 5
+    //Rule of 5
 
     //destructor
     Plan::~Plan(){
@@ -138,14 +153,36 @@ using std::vector;
     }
     //copy constructor
     //shallow copy of a constant reference - facilitiyOptions. since it can not be deleted or changed from a diff reference
-    Plan::Plan(Plan &other) : plan_id(other.plan_id), settlement(other.settlement), selectionPolicy(other.selectionPolicy), status(other.status),  facilities(other.facilities), underConstruction(other.facilities), facilityOptions(other.facilityOptions), life_quality_score(other.life_quality_score),economy_score(other.economy_score),environment_score(other.environment_score),constructionLimit(other.constructionLimit){
-        for(auto facility:other.facilities)
-            facilities.push_back(facility);
-        for(auto facility:other.underConstruction)
-            underConstruction.push_back(facility);
+    Plan::Plan(const Plan &other) : 
+    plan_id(other.plan_id), settlement(other.settlement), 
+    selectionPolicy(other.selectionPolicy), status(other.status),  
+    facilities(), underConstruction(), facilityOptions(other.facilityOptions), 
+    life_quality_score(other.life_quality_score),economy_score(other.economy_score),
+    environment_score(other.environment_score),constructionLimit(other.constructionLimit){
+
+        selectionPolicy = other.selectionPolicy->clone();
+
+        for (auto *facility : other.facilities) {
+        facilities.push_back(new Facility(*facility));
+        }
+
+        for (auto *facility : other.underConstruction) {
+        underConstruction.push_back(new Facility(*facility));
+        }     
+    
     }
+
     //move copy constructor
-    Plan::Plan(Plan &&other) noexcept : plan_id(other.plan_id), settlement(other.settlement), selectionPolicy(other.selectionPolicy), status(other.status),facilities(std::move(other.facilities)),underConstruction(std::move(other.underConstruction)),facilityOptions(other.facilityOptions),  life_quality_score(other.life_quality_score), economy_score(other.economy_score), environment_score(other.environment_score) ,constructionLimit(std::move(other.constructionLimit)){}
+    Plan::Plan(Plan &&other) noexcept : 
+    plan_id(other.plan_id), settlement(other.settlement), selectionPolicy(other.selectionPolicy), 
+    status(other.status),facilities(std::move(other.facilities)),underConstruction(std::move(other.underConstruction)),
+    facilityOptions(other.facilityOptions),  life_quality_score(other.life_quality_score), economy_score(other.economy_score), 
+    environment_score(other.environment_score) ,constructionLimit(other.constructionLimit){
+
+        other.selectionPolicy = nullptr;
+        
+        
+    }
 
 
 const int Plan::getConstructionLimit(){

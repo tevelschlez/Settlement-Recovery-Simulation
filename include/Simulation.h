@@ -31,6 +31,13 @@ class Simulation {
         void open();
         void printActionsLog();
 
+        // Rule of Five:
+        ~Simulation();                         // Destructor
+        Simulation(const Simulation &other);   // Copy constructor
+        Simulation(Simulation &&other) noexcept; // Move constructor
+        Simulation& operator=(const Simulation& other); // Copy assignment 
+        Simulation& operator=(Simulation&& other) noexcept; // Move assignment 
+
     private:
         bool isRunning;
         int planCounter; //For assigning unique plan IDs

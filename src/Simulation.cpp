@@ -16,8 +16,10 @@ using std::vector;
 class Auxiliary;
 
 
-        Simulation::Simulation(const string &configFilePath) : isRunning(false), planCounter(0) { loadConfigFile(configFilePath); }
-
+        Simulation::Simulation(const string &configFilePath) 
+        : isRunning(false), planCounter(-1), actionsLog(), plans(), settlements(), facilitiesOptions() { 
+            loadConfigFile(configFilePath); 
+        }
         void Simulation::loadConfigFile(const string &configFilePath){
             std::ifstream configFile(configFilePath);
 
@@ -225,18 +227,21 @@ class Auxiliary;
         }
 
         bool Simulation::addSettlement(Settlement *settlement){
-            if(isSettlementExists(settlement->getName()))
+            if(isSettlementExists(settlement->getName())){
                 throw std::invalid_argument("Settlement already exists");
-            else
+            }
                 settlements.push_back(settlement);
+                return true;
         }
 
         bool Simulation::addFacility(FacilityType facility){
-            if (isFacilityExists(facility.getName()))
+            if (isFacilityExists(facility.getName())){
                 throw std::invalid_argument("Facility already exists");
-            else
-              facilitiesOptions.push_back(facility);
+            }
+                facilitiesOptions.push_back(facility);
+                return true;
         }
+        
 
         bool Simulation::isSettlementExists(const string &settlementName){
             for(auto &settlement:settlements){
@@ -267,35 +272,39 @@ class Auxiliary;
          SelectionPolicy *Simulation::getSelectionPolicy(const string &policy){//returning null if the policy does not exist
              SelectionPolicy *selection;
 
-             if (policy == "nve")
-                 selection = new NaiveSelection();
-             else if (policy == "bal")
-                 selection = new BalancedSelection(0, 0, 0);
-             else if (policy == "eco")
-                 selection = new EconomySelection();
-             else if (policy == "env")
-                 selection = new SustainabilitySelection();
-             else
-             {
-                 selection = nullptr;
-             }
-
-             return selection;
-         }
+            if (policy == "nve")
+                selection = new NaiveSelection();
+            else if (policy == "bal")
+                selection = new BalancedSelection(0, 0, 0);
+            else if (policy == "eco")
+                selection = new EconomySelection();
+            else if (policy == "env")
+                selection = new SustainabilitySelection();
+            else
+            {
+                selection = nullptr;
+            }
+            return selection;
+        }
 
 
         Settlement &Simulation::getSettlement(const string &settlementName){
             for(auto &settlement:settlements){
-                if (settlement->getName()==settlementName)
+                if (settlement->getName()==settlementName){
                     return *settlement;
-            }
+                }
+            }  
+            throw std::invalid_argument("Settlement does not exist");
         }
 
         Plan &Simulation::getPlan(const int planID){
-            for(auto &plan:plans)
+            for(auto &plan:plans){
                 if(plan.getID()==planID)
                     return plan;
+            }
+            throw std::invalid_argument("Plan does not exist");
         }
+        
 
         void Simulation::step(){//should iterate over all plans and perform step for each of them
         //in the action class, this method will be performed as many times as the user decides
@@ -319,5 +328,107 @@ class Auxiliary;
                 std::cout << action->toString() << std::endl;
             }
         }
+
+// Rule Of Five:
+
+        // Destructor
+        Simulation::~Simulation(){
+            for(auto &settlement:settlements){
+                delete settlement;
+            }
+            for(auto &action:actionsLog){
+                delete action;
+            } 
+        }
+        // Copy constructor
+        Simulation::Simulation(const Simulation &other) : 
+        isRunning(other.isRunning), planCounter(other.planCounter), actionsLog(),
+        plans(other.plans),settlements(), facilitiesOptions(other.facilitiesOptions) {
+
+            for (const auto &settlement : other.settlements) {
+                settlements.push_back(new Settlement(*settlement)); 
+            }
+            for (const auto &action : other.actionsLog) {
+                actionsLog.push_back(action->clone());
+            }
+        }
+
+        // Move constructor
+        Simulation::Simulation(Simulation &&other) noexcept: 
+            isRunning(other.isRunning), planCounter(other.planCounter), 
+            actionsLog(std::move(other.actionsLog)), plans(other.plans), 
+            settlements(std::move(other.settlements)), facilitiesOptions(other.facilitiesOptions) {}
+        
+
+        // Copy assignment
+        Simulation& Simulation::operator=(const Simulation& other) {
+            if (this != &other) {
+
+                isRunning = other.isRunning;
+                planCounter = other.planCounter;
+
+                for (auto &action : actionsLog) {
+                    delete action;
+                }
+                actionsLog.clear();
+
+                for (const auto &action : other.actionsLog) {
+                    actionsLog.push_back(action->clone());
+                }
+        
+                for (auto &settlement : settlements) {
+                    delete settlement;
+                }
+                settlements.clear();
+                for (const auto &settlement : other.settlements) {
+                    settlements.push_back(new Settlement(*settlement));
+                }
+
+                facilitiesOptions.clear();
+                for (const auto &facility : other.facilitiesOptions) {
+                    facilitiesOptions.push_back(facility);
+                }
+        
+                for (const Plan &plan : other.plans) {
+                    Settlement &settlement = getSettlement(plan.getSettlement().getName());
+                    Plan newPlan = Plan(plan.getID(), settlement, plan.getSelectionPolicy(), facilitiesOptions);
+                    for (Facility *facility : plan.getFacilities()) {
+                        newPlan.addFacility(new Facility(*facility));
+                    }
+                    for (Facility *facility : plan.getUnderConstruction()) {
+                        newPlan.addFacility(new Facility(*facility));
+                    }
+                    plans.push_back(newPlan);
+                }
+            }
+
+            return *this;   
+        }
+
+        // Move assignment
+        Simulation& Simulation::operator=(Simulation&& other) noexcept {
+            if (this != &other) {
+                for (auto& action : actionsLog) {
+                    delete action;
+                }
+                actionsLog.clear();
+
+                for (auto& settlement : settlements) {
+                    delete settlement;
+                }
+                settlements.clear();
+
+                isRunning = other.isRunning;
+                planCounter = other.planCounter;
+
+                actionsLog = std::move(other.actionsLog);
+                plans = std::move(other.plans);
+                settlements = std::move(other.settlements);
+                facilitiesOptions = std::move(other.facilitiesOptions);
+            }
+            return *this;
+        }
+    
+
 
 
