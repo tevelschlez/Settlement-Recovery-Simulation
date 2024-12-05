@@ -69,6 +69,9 @@ using std::vector;
         if(currentStatus == FacilityStatus::OPERATIONAL){
             facilities.push_back(underConstruction[0]);
             underConstruction.erase(underConstruction.begin() + 0);//will remove the first object if needed
+            life_quality_score += underConstruction[0]->getLifeQualityScore();
+            economy_score += underConstruction[0]->getEconomyScore();
+            environment_score += underConstruction[0]->getEnvironmentScore();
         }
     }
 
