@@ -55,6 +55,10 @@ using std::vector;
             if(currentStatus == FacilityStatus::OPERATIONAL){
                 facilities.push_back(underConstruction[i]);
                 underConstruction.erase(underConstruction.begin() + i);
+
+                life_quality_score += underConstruction[i]->getLifeQualityScore();
+                economy_score += underConstruction[i]->getEconomyScore();
+                environment_score += underConstruction[i]->getEnvironmentScore();
                 --i;
 
                 status = PlanStatus::AVALIABLE;
@@ -81,9 +85,9 @@ using std::vector;
         str += "EconomyScore:" + std::to_string(economy_score) + "\n";
         str += "EnviromentScore:" + std::to_string(environment_score) + "\n";
 
-        for (auto *facility : facilities)
+        for (auto *facility : getFacilities())
             str += facility->toString();
-        for (auto *facility : underConstruction)
+        for (auto *facility : getUnderConstruction())
             str += facility->toString();
 
         std::cout << str << std::endl;
@@ -105,9 +109,6 @@ using std::vector;
         else
             facilities.push_back(facility);
 
-        life_quality_score += facility->getLifeQualityScore();
-        economy_score += facility->getEconomyScore();
-        environment_score += facility->getEnvironmentScore();
     }
 
     const string Plan::toString() const{
@@ -143,7 +144,7 @@ using std::vector;
     //Rule of 5
 
     //destructor
-    Plan::~Plan(){
+    Plan::~Plan(){ 
         for(auto facility:facilities)
             delete facility;
         for(auto facility:underConstruction)
@@ -151,6 +152,8 @@ using std::vector;
 
         delete selectionPolicy;
     }
+
+
     //copy constructor
     //shallow copy of a constant reference - facilitiyOptions. since it can not be deleted or changed from a diff reference
     Plan::Plan(const Plan &other) : 
@@ -162,28 +165,34 @@ using std::vector;
 
         selectionPolicy = other.selectionPolicy->clone();
 
-        for (auto *facility : other.facilities) {
-        facilities.push_back(new Facility(*facility));
+        for (const auto &facility : other.facilities) {
+        facilities.push_back(new Facility(facility->getName(),facility->getSettlementName(),facility->getCategory(),facility->getCost(),facility->getLifeQualityScore(),facility->getEconomyScore(),facility->getEnvironmentScore()));
         }
 
-        for (auto *facility : other.underConstruction) {
-        underConstruction.push_back(new Facility(*facility));
+        for (const auto &facility : other.underConstruction) {
+            underConstruction.push_back(new Facility(facility->getName(), facility->getSettlementName(), facility->getCategory(), facility->getCost(), facility->getLifeQualityScore(), facility->getEconomyScore(), facility->getEnvironmentScore()));
         }     
     
     }
 
     //move copy constructor
-    Plan::Plan(Plan &&other) noexcept : 
-    plan_id(other.plan_id), settlement(other.settlement), selectionPolicy(other.selectionPolicy), 
-    status(other.status),facilities(std::move(other.facilities)),underConstruction(std::move(other.underConstruction)),
-    facilityOptions(other.facilityOptions),  life_quality_score(other.life_quality_score), economy_score(other.economy_score), 
-    environment_score(other.environment_score) ,constructionLimit(other.constructionLimit){
+    Plan::Plan(Plan &&other) noexcept
+        : plan_id(other.plan_id),
+          settlement(std::move(other.settlement)),
+          selectionPolicy(other.selectionPolicy), // Transfer ownership
+          status(std::move(other.status)),
+          facilities(std::move(other.facilities)),
+          underConstruction(std::move(other.underConstruction)),
+          facilityOptions(std::move(other.facilityOptions)),
+          life_quality_score(other.life_quality_score),
+          economy_score(other.economy_score),
+          environment_score(other.environment_score),
+          constructionLimit(other.constructionLimit)
+    {
 
+        // Nullify or reset `other` to ensure it's in a valid state
         other.selectionPolicy = nullptr;
-        
-        
     }
-
 
 const int Plan::getConstructionLimit(){
     unsigned int construcion_limit;
