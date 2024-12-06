@@ -308,7 +308,7 @@ class Auxiliary;
 
         void Simulation::step(){//should iterate over all plans and perform step for each of them
         //in the action class, this method will be performed as many times as the user decides
-            for (auto plan :plans){
+            for (auto &plan :plans){
                 plan.step();
             }
         }
@@ -388,7 +388,9 @@ class Auxiliary;
                 for (const auto &facility : other.facilitiesOptions) {
                     facilitiesOptions.push_back(facility);
                 }
-        
+
+                plans.clear();
+
                 for (const Plan &plan : other.plans) {
                     Settlement &settlement = getSettlement(plan.getSettlement().getName());
                     Plan newPlan = Plan(plan.getID(), settlement, plan.getSelectionPolicy(), facilitiesOptions);

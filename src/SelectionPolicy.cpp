@@ -2,7 +2,7 @@
 #include <vector>
 #include "Facility.h"
 using std::vector;
-
+#include <algorithm>
 
 //NaiveSelection Class
 
@@ -61,12 +61,8 @@ using std::vector;
             { // returns the minimum of all sums of scores
                 int min_among_scores;
 
-                if (sum_lifeQuality < sum_economy && sum_lifeQuality < sum_enviroment)
-                    min_among_scores = sum_lifeQuality;
-                else if (sum_economy < sum_lifeQuality && sum_economy < sum_enviroment)
-                    min_among_scores = sum_economy;
-                else
-                    min_among_scores = sum_enviroment;
+                min_among_scores = std::min(sum_lifeQuality, sum_enviroment);
+                min_among_scores = std::min(min_among_scores, sum_economy);
 
                 return min_among_scores;
             }
@@ -75,12 +71,8 @@ using std::vector;
             { // return the maximun of all sums of scores
                 int max_among_scores;
 
-                if (sum_lifeQuality > sum_economy && sum_lifeQuality > sum_enviroment)
-                    max_among_scores = sum_lifeQuality;
-                else if (sum_economy > sum_lifeQuality && sum_economy > sum_enviroment)
-                    max_among_scores = sum_economy;
-                else
-                    max_among_scores = sum_enviroment;
+                max_among_scores = std::max(sum_lifeQuality, sum_economy);
+                max_among_scores = std::max(max_among_scores, sum_enviroment);
 
                 return max_among_scores;
             }

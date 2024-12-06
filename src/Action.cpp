@@ -148,7 +148,7 @@ extern Simulation *backup;
             if(!simulation.isPlanExists(planId))
                 error("Plan doesn't exist");
             else{
-                Plan plan = simulation.getPlan(planId);
+                Plan &plan = simulation.getPlan(planId);
                 plan.printStatus();
                 complete();
             }
@@ -255,7 +255,7 @@ extern Simulation *backup;
             if(backup==nullptr)
                 error("No backup available");
             else{
-                simulation = *backup;
+                simulation = simulation.operator=(*backup);
                 complete();
             }
             simulation.addAction(this);
