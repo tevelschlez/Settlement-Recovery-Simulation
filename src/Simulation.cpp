@@ -101,19 +101,13 @@ class Auxiliary;
             open();//isRunning =true
             string command;
             std::cout << "The simulation has started" << std::endl;
-
-
-            while (isRunning)
-            {
+            while (isRunning){
                 //analyziation of the user input
 
                 string command;
-
                 getline(std::cin, command);
                 BaseAction *action;
-
                 vector<string> arguments = Auxiliary::parseArguments(command);
-
                 const string &actionType = arguments[0];
 
                 if(actionType=="plan"){
@@ -121,8 +115,7 @@ class Auxiliary;
                     const string &policy = arguments[2];
 
                     action = new AddPlan(settlementName, policy);
-
-              }
+                }
 
                 if (actionType=="settlement"){
                     const string &settlementName = arguments[1];
@@ -203,6 +196,7 @@ class Auxiliary;
                 if(actionType=="restore"){
                     action = new RestoreSimulation();
                     action->act(*this);
+                    addAction(action);
                     continue;
                 }
 
@@ -289,12 +283,13 @@ class Auxiliary;
 
 
         Settlement &Simulation::getSettlement(const string &settlementName){
-            for(auto &settlement:settlements){
-                if (settlement->getName()==settlementName){
-                    return *settlement;
-                }
-            }  
-            throw std::invalid_argument("Settlement does not exist");
+            for (auto* settlement : settlements) {
+        if (settlement && settlement->getName() == settlementName) {
+            return *settlement;
+        }
+    }
+    throw std::runtime_error("Settlement not found: " + settlementName);
+
         }
 
         Plan &Simulation::getPlan(const int planID){
@@ -333,17 +328,17 @@ class Auxiliary;
 
         // Destructor
         Simulation::~Simulation(){
-            for(auto &settlement:settlements){
+            for(auto* settlement:settlements){
                 delete settlement;
             }
-            for(auto &action:actionsLog){
+            for(auto* action:actionsLog){
                 delete action;
             } 
         }
         // Copy constructor
         Simulation::Simulation(const Simulation &other) : 
         isRunning(other.isRunning), planCounter(other.planCounter), actionsLog(),
-        plans(other.plans),settlements(), facilitiesOptions(other.facilitiesOptions) {
+        plans(),settlements(), facilitiesOptions(other.facilitiesOptions) {
 
             for (const auto &settlement : other.settlements) {
                 settlements.push_back(new Settlement(*settlement)); 
@@ -351,13 +346,26 @@ class Auxiliary;
             for (const auto &action : other.actionsLog) {
                 actionsLog.push_back(action->clone());
             }
+            for (const auto &plan : other.plans) {
+
+                Settlement &settlement = getSettlement(plan.getSettlement().getName());
+
+                Plan newPlan = Plan(plan.getID(), settlement, plan.getSelectionPolicy()->clone(), facilitiesOptions);
+                for (Facility *facility : plan.getFacilities()) {
+                    newPlan.addFacility(new Facility(*facility));
+                }
+                for (Facility *facility : plan.getUnderConstruction()) {
+                    newPlan.addFacility(new Facility(*facility));
+                }
+                plans.push_back(std::move(newPlan));
+            }
         }
 
         // Move constructor
         Simulation::Simulation(Simulation &&other) noexcept: 
             isRunning(other.isRunning), planCounter(other.planCounter), 
-            actionsLog(std::move(other.actionsLog)), plans(other.plans), 
-            settlements(std::move(other.settlements)), facilitiesOptions(other.facilitiesOptions) {}
+            actionsLog(std::move(other.actionsLog)), plans(std::move(other.plans)), 
+            settlements(std::move(other.settlements)), facilitiesOptions(std::move(other.facilitiesOptions)) {}
         
 
         // Copy assignment
@@ -366,7 +374,6 @@ class Auxiliary;
 
                 isRunning = other.isRunning;
                 planCounter = other.planCounter;
-
                 for (auto &action : actionsLog) {
                     delete action;
                 }
@@ -375,7 +382,6 @@ class Auxiliary;
                 for (const auto &action : other.actionsLog) {
                     actionsLog.push_back(action->clone());
                 }
-        
                 for (auto &settlement : settlements) {
                     delete settlement;
                 }
@@ -383,24 +389,22 @@ class Auxiliary;
                 for (const auto &settlement : other.settlements) {
                     settlements.push_back(new Settlement(*settlement));
                 }
-
                 facilitiesOptions.clear();
                 for (const auto &facility : other.facilitiesOptions) {
                     facilitiesOptions.push_back(facility);
                 }
-
-                plans.clear();
-
+                plans.clear(); 
+                
                 for (const Plan &plan : other.plans) {
                     Settlement &settlement = getSettlement(plan.getSettlement().getName());
                     Plan newPlan = Plan(plan.getID(), settlement, plan.getSelectionPolicy(), facilitiesOptions);
-                    for (Facility *facility : plan.getFacilities()) {
+                         for (Facility *facility : plan.getFacilities()) {
+                        newPlan.addFacility(new Facility(*facility));
+                        }
+                     for (Facility *facility : plan.getUnderConstruction()) {
                         newPlan.addFacility(new Facility(*facility));
                     }
-                    for (Facility *facility : plan.getUnderConstruction()) {
-                        newPlan.addFacility(new Facility(*facility));
-                    }
-                    plans.push_back(newPlan);
+                        plans.push_back(newPlan);
                 }
             }
 
