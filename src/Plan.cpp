@@ -148,53 +148,57 @@ using std::vector;
 
     //destructor
     Plan::~Plan(){ 
-        for(auto facility:facilities)
-            delete facility;
-        for(auto facility:underConstruction)
-            delete facility;
-
+        for (auto* facility : facilities) {
+        delete facility;
+        }
+        for (auto* facility : underConstruction) {
+        delete facility;
+        }
         delete selectionPolicy;
+        selectionPolicy = nullptr;
+        }
+        
+    //copy constructor
+    Plan::Plan(const Plan& other) 
+    : plan_id(other.plan_id), settlement(other.settlement), 
+    selectionPolicy(nullptr),
+    status(other.status), facilities(), underConstruction(), 
+    facilityOptions(other.facilityOptions),
+    life_quality_score(other.life_quality_score),
+    economy_score(other.economy_score),
+    environment_score(other.environment_score),
+    constructionLimit(other.constructionLimit) {
+    
+    if (other.selectionPolicy) {
+        selectionPolicy = other.selectionPolicy->clone();
     }
 
-
-    //copy constructor
-    //shallow copy of a constant reference - facilitiyOptions. since it can not be deleted or changed from a diff reference
-    Plan::Plan(const Plan &other) : 
-    plan_id(other.plan_id), settlement(other.settlement), 
-    selectionPolicy(other.selectionPolicy), status(other.status),  
-    facilities(), underConstruction(), facilityOptions(other.facilityOptions), 
-    life_quality_score(other.life_quality_score),economy_score(other.economy_score),
-    environment_score(other.environment_score),constructionLimit(other.constructionLimit){
-
-        selectionPolicy = other.selectionPolicy->clone();
-
-        for (const auto &facility : other.facilities) {
-        facilities.push_back(new Facility(facility->getName(),facility->getSettlementName(),facility->getCategory(),facility->getCost(),facility->getLifeQualityScore(),facility->getEconomyScore(),facility->getEnvironmentScore()));
-        }
-
-        for (const auto &facility : other.underConstruction) {
-            underConstruction.push_back(new Facility(facility->getName(), facility->getSettlementName(), facility->getCategory(), facility->getCost(), facility->getLifeQualityScore(), facility->getEconomyScore(), facility->getEnvironmentScore()));
-        }     
-    
+    for (const auto* facility : other.facilities) {
+        facilities.push_back(new Facility(*facility));
+    }
+    for (const auto* facility : other.underConstruction) {
+        underConstruction.push_back(new Facility(*facility));
+    }
     }
 
     //move copy constructor
     Plan::Plan(Plan &&other) noexcept
         : plan_id(other.plan_id),
-          settlement(std::move(other.settlement)),
-          selectionPolicy(other.selectionPolicy), // Transfer ownership
-          status(std::move(other.status)),
-          facilities(std::move(other.facilities)),
-          underConstruction(std::move(other.underConstruction)),
-          facilityOptions(std::move(other.facilityOptions)),
-          life_quality_score(other.life_quality_score),
-          economy_score(other.economy_score),
-          environment_score(other.environment_score),
-          constructionLimit(other.constructionLimit)
+        settlement(std::move(other.settlement)),
+        selectionPolicy(other.selectionPolicy), 
+        status(std::move(other.status)),
+        facilities(std::move(other.facilities)),
+        underConstruction(std::move(other.underConstruction)),
+        facilityOptions(std::move(other.facilityOptions)),
+        life_quality_score(other.life_quality_score),
+        economy_score(other.economy_score),
+        environment_score(other.environment_score),
+        constructionLimit(other.constructionLimit)
     {
 
-        // Nullify or reset `other` to ensure it's in a valid state
         other.selectionPolicy = nullptr;
+        other.facilities.clear();
+        other.underConstruction.clear();
     }
 
 const int Plan::getConstructionLimit(){

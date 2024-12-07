@@ -34,9 +34,10 @@ extern Simulation *backup;
 
         SimulateStep::SimulateStep(const int numOfSteps):numOfSteps(numOfSteps){}
 
-        void    SimulateStep::act(Simulation &simulation) {//does not return error
-            for (int i = 0; i < numOfSteps;i++)
+        void SimulateStep::act(Simulation &simulation) {//does not return error
+            for (int i = 0; i < numOfSteps;i++){
                 simulation.step();
+            }
             complete();
             simulation.addAction(this);
         }
@@ -255,7 +256,7 @@ extern Simulation *backup;
             if(backup==nullptr)
                 error("No backup available");
             else{
-                simulation = simulation.operator=(*backup);
+                 simulation = *backup;
                 complete();
             }
             simulation.addAction(this);
