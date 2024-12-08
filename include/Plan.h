@@ -39,13 +39,12 @@ class Plan {
 
         SelectionPolicy* getSelectionPolicy() const;
         //
-
-        //rule of 5:
-        ~Plan();//destructors
-        Plan(const Plan &other);//copy constructor
-        Plan(Plan &&other) noexcept;//move copy constructor
-        Plan& operator=(const Plan& other) = delete;  // Copy assignment operator (disabled)
-        Plan& operator=(Plan&& other) = delete;      // Move assignment operator (disabled)
+        Plan(const Plan& other, const Settlement& other_settlement);
+        ~Plan();
+        Plan(const Plan& other);
+        Plan(Plan&& other);
+        Plan& operator=(const Plan& other) = delete;
+        Plan& operator=(const Plan&& other) = delete;
 
     private:
         int plan_id;

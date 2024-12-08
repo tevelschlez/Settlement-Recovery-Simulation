@@ -22,7 +22,7 @@ class Simulation {
         bool addFacility(FacilityType facility);
         bool isSettlementExists(const string &settlementName);
         bool isFacilityExists(const string &facilityName);
-        bool isPlanExists(const int &ID);
+       bool isPlanExists(const int &ID);
         SelectionPolicy *getSelectionPolicy(const string &policy);
         Settlement &getSettlement(const string &settlementName);
         Plan &getPlan(const int planID);
@@ -32,11 +32,11 @@ class Simulation {
         void printActionsLog();
 
         // Rule of Five:
-        ~Simulation();                         // Destructor
-        Simulation(const Simulation &other);   // Copy constructor
-        Simulation(Simulation &&other) noexcept; // Move constructor
-        Simulation& operator=(const Simulation& other); // Copy assignment 
-        Simulation& operator=(Simulation&& other) noexcept; // Move assignment 
+        ~Simulation();
+        Simulation(const Simulation& other);
+        Simulation& operator=(const Simulation &other);
+        Simulation(Simulation&& other);
+        Simulation& operator=(Simulation&& other);
 
     private:
         bool isRunning;
