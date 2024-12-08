@@ -195,9 +195,9 @@ class Auxiliary;
 
                 if(actionType=="restore"){
                     action = new RestoreSimulation();
-                    action->act(*this);
-                    addAction(action);
-                    continue;
+                    //action->act(*this);
+                    //addAction(action);
+                    //continue;
                 }
 
                 action->act(*this);
@@ -326,114 +326,118 @@ class Auxiliary;
 
 // Rule Of Five:
 
-        // Destructor
-        Simulation::~Simulation(){
-            for(auto* settlement:settlements){
-                delete settlement;
-            }
-            for(auto* action:actionsLog){
-                delete action;
-            } 
+        Simulation::~Simulation()
+{
+    for (auto& action : actionsLog){
+        delete action;
+    }
+    actionsLog.clear();
+    for (auto settlement : settlements){
+        delete settlement;
+    }
+    settlements.clear();
+}
+
+Simulation::Simulation(const Simulation &other) :
+    isRunning(other.isRunning),
+    planCounter(other.planCounter),
+    actionsLog(),
+    plans(),
+    settlements(),
+    facilitiesOptions(other.facilitiesOptions)
+{
+    for (auto action : other.actionsLog){
+        actionsLog.push_back(action->clone());
+    }
+    for (auto settlement : other.settlements){
+        settlements.push_back(new Settlement(*settlement));
+    }
+    // TODO: Need to create a plan with a settlement that has the same name of the settlement in otherPlan but that settlement is in the settlements vector of this Plan.
+    for(auto plan : other.plans){
+        plans.push_back(Plan(plan, getSettlement(plan.getSettlement().getName())));
+    }
+}
+
+Simulation &Simulation::operator=(const Simulation &other)
+{
+    if (this != &other){
+        isRunning = other.isRunning;
+        planCounter = other.planCounter;
+
+        for (auto &action : actionsLog){
+            delete action;
         }
-        // Copy constructor
-        Simulation::Simulation(const Simulation &other) : 
-        isRunning(other.isRunning), planCounter(other.planCounter), actionsLog(),
-        plans(),settlements(), facilitiesOptions(other.facilitiesOptions) {
-
-            for (const auto &settlement : other.settlements) {
-                settlements.push_back(new Settlement(*settlement)); 
-            }
-            for (const auto &action : other.actionsLog) {
-                actionsLog.push_back(action->clone());
-            }
-            for (const auto &plan : other.plans) {
-
-                Settlement &settlement = getSettlement(plan.getSettlement().getName());
-
-                Plan newPlan = Plan(plan.getID(), settlement, plan.getSelectionPolicy()->clone(), facilitiesOptions);
-                for (Facility *facility : plan.getFacilities()) {
-                    newPlan.addFacility(new Facility(*facility));
-                }
-                for (Facility *facility : plan.getUnderConstruction()) {
-                    newPlan.addFacility(new Facility(*facility));
-                }
-                plans.push_back(std::move(newPlan));
-            }
-        }
-
-        // Move constructor
-        Simulation::Simulation(Simulation &&other) noexcept: 
-            isRunning(other.isRunning), planCounter(other.planCounter), 
-            actionsLog(std::move(other.actionsLog)), plans(std::move(other.plans)), 
-            settlements(std::move(other.settlements)), facilitiesOptions(std::move(other.facilitiesOptions)) {}
-        
-
-        // Copy assignment
-        Simulation& Simulation::operator=(const Simulation& other) {
-            if (this != &other) {
-
-                isRunning = other.isRunning;
-                planCounter = other.planCounter;
-                for (auto &action : actionsLog) {
-                    delete action;
-                }
-                actionsLog.clear();
-
-                for (const auto &action : other.actionsLog) {
-                    actionsLog.push_back(action->clone());
-                }
-                for (auto &settlement : settlements) {
-                    delete settlement;
-                }
-                settlements.clear();
-                for (const auto &settlement : other.settlements) {
-                    settlements.push_back(new Settlement(*settlement));
-                }
-                facilitiesOptions.clear();
-                for (const auto &facility : other.facilitiesOptions) {
-                    facilitiesOptions.push_back(facility);
-                }
-                plans.clear(); 
-                
-                for (const Plan &plan : other.plans) {
-                    Settlement &settlement = getSettlement(plan.getSettlement().getName());
-                    Plan newPlan = Plan(plan.getID(), settlement, plan.getSelectionPolicy(), facilitiesOptions);
-                         for (Facility *facility : plan.getFacilities()) {
-                        newPlan.addFacility(new Facility(*facility));
-                        }
-                     for (Facility *facility : plan.getUnderConstruction()) {
-                        newPlan.addFacility(new Facility(*facility));
-                    }
-                        plans.push_back(newPlan);
-                }
-            }
-
-            return *this;   
+        actionsLog.clear();
+        for (auto &action : other.actionsLog){
+            actionsLog.push_back(action->clone());
         }
 
-        // Move assignment
-        Simulation& Simulation::operator=(Simulation&& other) noexcept {
-            if (this != &other) {
-                for (auto& action : actionsLog) {
-                    delete action;
-                }
-                actionsLog.clear();
-
-                for (auto& settlement : settlements) {
-                    delete settlement;
-                }
-                settlements.clear();
-
-                isRunning = other.isRunning;
-                planCounter = other.planCounter;
-
-                actionsLog = std::move(other.actionsLog);
-                plans = std::move(other.plans);
-                settlements = std::move(other.settlements);
-                facilitiesOptions = std::move(other.facilitiesOptions);
-            }
-            return *this;
+        for (auto settlement : settlements){
+            delete settlement;
         }
+        settlements.clear();
+        for (auto settlement : other.settlements){
+            settlements.push_back(new Settlement(*settlement));
+        }
+
+        plans.clear();
+        // TODO: Need to create a plan with a settlement that has the same name of the settlement in otherPlan but that settlement is in the settlements vector of this Plan.
+        for (auto plan : other.plans) {
+//            Settlement temp = plan.getSettlment();
+            plans.push_back(Plan(plan, getSettlement(plan.getSettlement().getName())));
+        }
+
+        facilitiesOptions.clear();
+        for (auto& facility : other.facilitiesOptions){
+            facilitiesOptions.push_back(facility);
+        }
+    }
+    return *this;
+}
+
+Simulation::Simulation(Simulation &&other) :
+    isRunning(other.isRunning),
+    planCounter(other.planCounter),
+    actionsLog(std::move(other.actionsLog)),
+    plans(other.plans),   
+    settlements(std::move(other.settlements)),
+    facilitiesOptions(other.facilitiesOptions)
+{
+    other.isRunning = false;
+    other.planCounter = 0;
+    for (auto& action : other.actionsLog) {
+        action = nullptr;
+    }
+    for (auto& settlement : other.settlements) {
+        settlement = nullptr;
+    }
+}
+
+Simulation &Simulation::operator=(Simulation &&other)
+{
+    if (this != &other) {
+        isRunning = other.isRunning;
+        planCounter = other.planCounter;
+        plans = std::move(other.plans);
+        facilitiesOptions.clear();
+        for(auto facility : other.facilitiesOptions){
+            facilitiesOptions.push_back(facility);
+        }
+        for(auto action : actionsLog){
+            delete action;
+        }
+        actionsLog.clear();
+        actionsLog = std::move(other.actionsLog);
+        other.actionsLog.clear();
+        for(auto settlemnt : settlements){
+            delete settlemnt;
+        }
+        settlements.clear();
+        settlements = std::move(other.settlements);
+        other.settlements.clear();
+    }
+    return *this;
+}
     
 
 

@@ -144,6 +144,27 @@ using std::vector;
         return false;
     }
 
+    Plan::Plan(const Plan &other, const Settlement& other_settlement) :
+    plan_id(other.plan_id),
+    settlement(other_settlement),
+    selectionPolicy(other.selectionPolicy->clone()),
+    status(other.status),
+    facilities(),
+    underConstruction(),
+    facilityOptions(other.facilityOptions),
+    life_quality_score(other.life_quality_score),
+    economy_score(other.economy_score),
+    environment_score(other.economy_score),
+    constructionLimit(other.constructionLimit)
+    {
+    for (Facility* facility : other.facilities){
+            facilities.push_back(new Facility(*facility));
+        }
+    for (auto facility : other.underConstruction){
+            underConstruction.push_back(new Facility(*facility));
+        }
+}
+
     //Rule of 5
 
     //destructor
@@ -155,13 +176,13 @@ using std::vector;
         delete facility;
         }
         delete selectionPolicy;
-        selectionPolicy = nullptr;
+        
         }
         
     //copy constructor
     Plan::Plan(const Plan& other) 
     : plan_id(other.plan_id), settlement(other.settlement), 
-    selectionPolicy(nullptr),
+    selectionPolicy(other.selectionPolicy->clone()),
     status(other.status), facilities(), underConstruction(), 
     facilityOptions(other.facilityOptions),
     life_quality_score(other.life_quality_score),
@@ -169,9 +190,6 @@ using std::vector;
     environment_score(other.environment_score),
     constructionLimit(other.constructionLimit) {
     
-    if (other.selectionPolicy) {
-        selectionPolicy = other.selectionPolicy->clone();
-    }
 
     for (const auto* facility : other.facilities) {
         facilities.push_back(new Facility(*facility));
@@ -182,7 +200,7 @@ using std::vector;
     }
 
     //move copy constructor
-    Plan::Plan(Plan &&other) noexcept
+    Plan::Plan(Plan &&other) 
         : plan_id(other.plan_id),
         settlement(std::move(other.settlement)),
         selectionPolicy(other.selectionPolicy), 
