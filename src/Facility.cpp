@@ -69,9 +69,9 @@ const FacilityStatus& Facility::getStatus() const {
         const string Facility::toString() const{
             string str = "FacilityName:" + name + "\nFacilityStatus:";
             if(status==FacilityStatus::OPERATIONAL)
-                str += "OPERATIONAL\n";
+                str += "OPERATIONAL";
             if(status==FacilityStatus::UNDER_CONSTRUCTIONS)
-                str += "UNDER_CONSTRUCTION\n";
+                str += "UNDER_CONSTRUCTION";
 
             return str;
         }

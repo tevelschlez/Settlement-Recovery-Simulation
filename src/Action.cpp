@@ -54,7 +54,7 @@ extern Simulation *backup;
         AddPlan::AddPlan(const string &settlementName, const string &selectionPolicy):settlementName(settlementName),selectionPolicy(selectionPolicy){}
 
         void AddPlan::act(Simulation &simulation) {
-            SelectionPolicy* policy=simulation.getSelectionPolicy(selectionPolicy);
+            SelectionPolicy* policy=simulation.getSelectionPolicy(0,0,0,selectionPolicy);
             try{
                 simulation.addPlan(simulation.getSettlement(settlementName), policy);
                 complete();
@@ -179,7 +179,7 @@ extern Simulation *backup;
                 if(plan.comparePolicy(newPolicy))
                     error(e);
                 else{
-                    SelectionPolicy *policy = simulation.getSelectionPolicy(newPolicy);
+                    SelectionPolicy *policy = simulation.getSelectionPolicy(plan.getlifeQualityScore(), plan.getEconomyScore(), plan.getEnvironmentScore(), newPolicy);
                     if(policy==nullptr)
                         error(e);
                     else{

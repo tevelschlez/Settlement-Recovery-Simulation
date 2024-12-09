@@ -85,20 +85,18 @@ using std::vector;
             const string BalancedSelection::toString() const{return "bal";}
             BalancedSelection *BalancedSelection::clone() const { return new BalancedSelection(*this); }
 
+            // EconomySelection Class
 
-//EconomySelection Class
+            EconomySelection::EconomySelection() : lastSelectedIndex(-1) {}
 
+            const FacilityType &EconomySelection::selectFacility(const vector<FacilityType> &facilitiesOptions)
+            {
+                lastSelectedIndex = static_cast<unsigned int>(lastSelectedIndex + 1) % facilitiesOptions.size();
 
-                EconomySelection::EconomySelection():lastSelectedIndex(-1){ }
-
-                const FacilityType &EconomySelection::selectFacility(const vector<FacilityType> &facilitiesOptions)
-                {
+                while (facilitiesOptions[lastSelectedIndex].getCategory() != FacilityCategory::ECONOMY)
                     lastSelectedIndex = static_cast<unsigned int>(lastSelectedIndex + 1) % facilitiesOptions.size();
 
-                    while(facilitiesOptions[lastSelectedIndex].getCategory()!=FacilityCategory::ECONOMY)
-                        lastSelectedIndex = static_cast<unsigned int>(lastSelectedIndex + 1) % facilitiesOptions.size();
-
-                    return facilitiesOptions[lastSelectedIndex];
+                return facilitiesOptions[lastSelectedIndex];
                 }
 
                 const string EconomySelection::toString() const{return "eco";}

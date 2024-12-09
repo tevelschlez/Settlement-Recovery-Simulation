@@ -26,7 +26,7 @@ using std::vector;
     void Plan::setSelectionPolicy(SelectionPolicy *selectionPolicy) {
         string str = "planID: " + std::to_string(plan_id) + "\n";
         str += "previousPolicy: " + this->selectionPolicy->toString() + "\n";
-        str += "newPolicy: " + selectionPolicy->toString() + "\n";
+        str += "newPolicy: " + selectionPolicy->toString() ;
         this->selectionPolicy = selectionPolicy;
         std::cout << str << std::endl;
     }
@@ -53,12 +53,11 @@ using std::vector;
             FacilityStatus currentStatus = underConstruction[i]->step();
 
             if(currentStatus == FacilityStatus::OPERATIONAL){
-                facilities.push_back(underConstruction[i]);
-                underConstruction.erase(underConstruction.begin() + i);
-
                 life_quality_score += underConstruction[i]->getLifeQualityScore();
                 economy_score += underConstruction[i]->getEconomyScore();
                 environment_score += underConstruction[i]->getEnvironmentScore();
+                facilities.push_back(underConstruction[i]);
+                underConstruction.erase(underConstruction.begin() + i);
                 --i;
 
                 status = PlanStatus::AVALIABLE;
@@ -67,11 +66,13 @@ using std::vector;
 
         FacilityStatus currentStatus = underConstruction[0]->step();//safely iterating over the first item
         if(currentStatus == FacilityStatus::OPERATIONAL){
-            facilities.push_back(underConstruction[0]);
-            underConstruction.erase(underConstruction.begin() + 0);//will remove the first object if needed
             life_quality_score += underConstruction[0]->getLifeQualityScore();
             economy_score += underConstruction[0]->getEconomyScore();
             environment_score += underConstruction[0]->getEnvironmentScore();
+            facilities.push_back(underConstruction[0]);
+            underConstruction.erase(underConstruction.begin() + 0);//will remove the first object if needed
+
+            status = PlanStatus::AVALIABLE;
         }
     }
 
@@ -86,14 +87,14 @@ using std::vector;
         str += "\nSelectionPolicy:" + selectionPolicy->toString() + "\n";
         str += "LifeQualityScore:" + std::to_string(life_quality_score) + "\n";
         str += "EconomyScore:" + std::to_string(economy_score) + "\n";
-        str += "EnviromentScore:" + std::to_string(environment_score) + "\n";
+        str += "EnviromentScore:" + std::to_string(environment_score);
+        std::cout << str << std::endl;
+
+        for (auto *facility : getUnderConstruction())
+           std::cout<<facility->toString()<<std::endl;
 
         for (auto *facility : getFacilities())
-            str += facility->toString();
-        for (auto *facility : getUnderConstruction())
-            str += facility->toString();
-
-        std::cout << str << std::endl;
+            std::cout << facility->toString() << std::endl;
     }
 
     const vector<Facility*> &Plan:: getFacilities() const{
@@ -142,7 +143,9 @@ using std::vector;
         if(policyToCompare==selectionPolicy->toString())
             return true;
         return false;
-    }
+    } 
+    
+    //Rule of 5
 
     Plan::Plan(const Plan &other, const Settlement& other_settlement) :
     plan_id(other.plan_id),
@@ -165,7 +168,7 @@ using std::vector;
         }
 }
 
-    //Rule of 5
+   
 
     //destructor
     Plan::~Plan(){ 

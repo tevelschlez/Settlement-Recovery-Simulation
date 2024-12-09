@@ -35,6 +35,7 @@ class BalancedSelection: public SelectionPolicy {
         //
         int minAmongScores(int sum_lifeQuality,int sum_economy, int sum_enviroment);
         int maxAmongScores(int sum_lifeQuality,int sum_economy, int sum_enviroment);
+
         //
 
     private:

@@ -40,7 +40,7 @@ class Auxiliary;
                 if (initializerType == "plan")
                 {
                     const string &settlementName = arguments[1];
-                    SelectionPolicy *selection = getSelectionPolicy(arguments[2]);
+                    SelectionPolicy *selection = getSelectionPolicy(0,0,0,arguments[2]);
 
                     addPlan(getSettlement(settlementName), selection);
                 }
@@ -262,14 +262,14 @@ class Auxiliary;
             return false;
         }
 
-
-         SelectionPolicy *Simulation::getSelectionPolicy(const string &policy){//returning null if the policy does not exist
-             SelectionPolicy *selection;
+        SelectionPolicy *Simulation::getSelectionPolicy(const int lifeQualityScore, const int economyScore, const int enviromentScore, const string &policy)
+        { // returning null if the policy does not exist
+            SelectionPolicy *selection;
 
             if (policy == "nve")
                 selection = new NaiveSelection();
             else if (policy == "bal")
-                selection = new BalancedSelection(0, 0, 0);
+                selection = new BalancedSelection(lifeQualityScore,economyScore,enviromentScore);
             else if (policy == "eco")
                 selection = new EconomySelection();
             else if (policy == "env")
@@ -280,7 +280,6 @@ class Auxiliary;
             }
             return selection;
         }
-
 
         Settlement &Simulation::getSettlement(const string &settlementName){
             for (auto* settlement : settlements) {

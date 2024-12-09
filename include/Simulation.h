@@ -23,7 +23,7 @@ class Simulation {
         bool isSettlementExists(const string &settlementName);
         bool isFacilityExists(const string &facilityName);
        bool isPlanExists(const int &ID);
-        SelectionPolicy *getSelectionPolicy(const string &policy);
+        SelectionPolicy *getSelectionPolicy(const int lifeQualityScore, const int economyScore, const int enviromentScore,const string &policy);
         Settlement &getSettlement(const string &settlementName);
         Plan &getPlan(const int planID);
         void step();
