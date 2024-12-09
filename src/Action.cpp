@@ -97,11 +97,11 @@ extern Simulation *backup;
         const string AddSettlement:: toString() const {
             string str = "settlement " + settlementName + " ";
             if(settlementType==SettlementType::CITY)
-                str += "CITY ";
+                str += "1 ";
             else if(settlementType==SettlementType::METROPOLIS)
-                str += "METROPOLIS ";
+                str += "2 ";
             else
-                str += "VILLAGE ";
+                str += "0 ";
 
             str += statusToString();
             return str;

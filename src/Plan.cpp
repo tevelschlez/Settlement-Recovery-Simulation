@@ -14,13 +14,30 @@ using std::vector;
 
 
     const int Plan::getlifeQualityScore() const{
-        return life_quality_score;
+        int totalLifeQualityScore = 0;
+        for (auto *facility:underConstruction)
+            totalLifeQualityScore += facility->getLifeQualityScore();
+
+        totalLifeQualityScore += life_quality_score;
+        return totalLifeQualityScore;
     }
+
     const int Plan::getEconomyScore() const{
-        return economy_score;
+        int totalEconomtScore = 0;
+        for (auto *facility : underConstruction)
+            totalEconomtScore += facility->getEconomyScore();
+
+        totalEconomtScore += economy_score;
+        return totalEconomtScore;
     }
+
     const int Plan::getEnvironmentScore() const{
-        return environment_score;
+        int totalEnviromentScore = 0;
+        for (auto *facility : underConstruction)
+            totalEnviromentScore += facility->getEnvironmentScore();
+
+        totalEnviromentScore += environment_score;
+        return totalEnviromentScore;
     }
 
     void Plan::setSelectionPolicy(SelectionPolicy *selectionPolicy) {
