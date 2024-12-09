@@ -2,227 +2,269 @@
 #include <string>
 #include <vector>
 #include "Simulation.h"
+#include <iostream>
 
-class BaseAction{
-    public:
-        BaseAction(){
+extern Simulation *backup;
 
-        }
-        ActionStatus getStatus() const{
-
-        }
-        virtual void act(Simulation& simulation){
-
-        }
-        virtual const string toString() const{
-
-        }
-        virtual BaseAction* clone() const {
-
-        }
-        virtual ~BaseAction() {
-
-        }
-
-    protected:
-        void complete();
-        void error(string errorMsg);
-        const string &getErrorMsg() const;
-
-    private:
-        string errorMsg;
-        ActionStatus status;
-};
-
-class SimulateStep : public BaseAction {
-
-    public:
-        SimulateStep(const int numOfSteps){
-
-        }
-        void act(Simulation &simulation) override{
-
-        }
-        const string toString() const override{
-
-        }
-        SimulateStep *clone() const override{
-
-        }
-    private:
-        const int numOfSteps;
-};
-
-class AddPlan : public BaseAction {
-    public:
-        AddPlan(const string &settlementName, const string &selectionPolicy){
-
-        }
-        void act(Simulation &simulation) override{
-
-        }
-        const string toString() const override{
-
-        }
-        AddPlan *clone() const override{
-
-        }
-    private:
-        const string settlementName;
-        const string selectionPolicy;
-};
-
-
-class AddSettlement : public BaseAction {
-    public:
-        AddSettlement(const string &settlementName,SettlementType settlementType){
-
-        }
-        void act(Simulation &simulation) override{
-
-        }
-        AddSettlement *clone() const override{
-
-        }
-        const string toString() const override{
-
-        }
+//BaseAction Class
+        BaseAction::BaseAction() : errorMsg(""), status(ActionStatus::COMPLETED) {}
         
-    private:
-        const string settlementName;
-        const SettlementType settlementType;
-};
+        ActionStatus BaseAction::getStatus() const { return status; }
 
+        void BaseAction::complete() {status = ActionStatus::COMPLETED; }
 
-
-class AddFacility : public BaseAction {
-    public:
-        AddFacility(const string &facilityName, const FacilityCategory facilityCategory, const int price, const int lifeQualityScore, const int economyScore, const int environmentScore){
-
+        void BaseAction::error(string errorMsg) { this->errorMsg = errorMsg;
+            status = ActionStatus::ERROR;
+            std::cout << "Error:" + errorMsg << std::endl;
         }
-        void act(Simulation &simulation) override{
 
+        const string &BaseAction::getErrorMsg() const { return errorMsg; }
+
+        const string BaseAction::statusToString() const{
+            string str="";
+            if (getStatus() == ActionStatus::COMPLETED)
+                str += "COMPLETED";
+            else if (getStatus() == ActionStatus::ERROR)
+                str + "ERROR";
+            return str;
         }
-        AddFacility *clone() const override{
 
+
+//SimulateStep Class
+
+        SimulateStep::SimulateStep(const int numOfSteps):numOfSteps(numOfSteps){}
+
+        void SimulateStep::act(Simulation &simulation) {//does not return error
+            for (int i = 0; i < numOfSteps;i++){
+                simulation.step();
+            }
+            complete();
+            simulation.addAction(this);
         }
-        const string toString() const override{
 
+        const string SimulateStep::toString() const {
+            string str = "step " + std::to_string(numOfSteps) + " " + statusToString();
+            return str;
         }
-    private:
-        const string facilityName;
-        const FacilityCategory facilityCategory;
-        const int price;
-        const int lifeQualityScore;
-        const int economyScore;
-        const int environmentScore;
 
-};
+        SimulateStep *SimulateStep::clone() const { return new SimulateStep(*this); }
 
-class PrintPlanStatus: public BaseAction {
-    public:
-        PrintPlanStatus(int planId){
 
+//AddPlan Class
+        AddPlan::AddPlan(const string &settlementName, const string &selectionPolicy):settlementName(settlementName),selectionPolicy(selectionPolicy){}
+
+        void AddPlan::act(Simulation &simulation) {
+            SelectionPolicy* policy=simulation.getSelectionPolicy(0,0,0,selectionPolicy);
+            try{
+                simulation.addPlan(simulation.getSettlement(settlementName), policy);
+                complete();
+            }
+            catch (const std::exception &e){
+                error(e.what());
+            }
+
+            simulation.addAction(this);
         }
-        void act(Simulation &simulation) override{
 
+        const string AddPlan::toString() const {
+            string str = "plan " + settlementName + " " + selectionPolicy+" "+statusToString();
+            return str;
         }
-        PrintPlanStatus *clone() const override{
 
+        AddPlan *AddPlan::clone() const { return new AddPlan(*this); }
+
+
+
+
+        // AddSettlement
+        AddSettlement::AddSettlement(const string &settlementName,SettlementType settlementType):settlementName(settlementName),settlementType(settlementType){}
+        
+        void AddSettlement::act(Simulation &simulation) {
+            try{
+                simulation.addSettlement(new Settlement(settlementName,settlementType));
+                complete();
+            }
+            catch(const std::exception &e){
+                error(e.what());
+            }
+
+            simulation.addAction(this);
         }
-        const string toString() const override{
 
+        AddSettlement *AddSettlement::clone() const { return new AddSettlement(*this); }
+
+
+        const string AddSettlement:: toString() const {
+            string str = "settlement " + settlementName + " ";
+            if(settlementType==SettlementType::CITY)
+                str += "1 ";
+            else if(settlementType==SettlementType::METROPOLIS)
+                str += "2 ";
+            else
+                str += "0 ";
+
+            str += statusToString();
+            return str;
         }
-    private:
-        const int planId;
-};
 
 
-class ChangePlanPolicy : public BaseAction {
-    public:
-        ChangePlanPolicy(const int planId, const string &newPolicy){
 
+//AddFacility Class
+        AddFacility::AddFacility(const string &facilityName, const FacilityCategory facilityCategory, const int price, const int lifeQualityScore, const int economyScore, const int environmentScore):facilityName(facilityName),facilityCategory(facilityCategory),price(price),lifeQualityScore(lifeQualityScore),economyScore(economyScore),environmentScore(environmentScore){}
+        
+        void AddFacility::act(Simulation &simulation) {
+            try{
+                simulation.addFacility(FacilityType(facilityName, facilityCategory, price, lifeQualityScore, economyScore, environmentScore));
+                complete();
+            }
+            catch(std::exception &e){
+                error(e.what());
+            }
+
+            simulation.addAction(this);
         }
-        void act(Simulation &simulation) override{
 
+        AddFacility *AddFacility::clone() const { return new AddFacility(*this); }
+
+
+        const string AddFacility:: toString() const {
+            string str = "facility " + facilityName;
+            if(facilityCategory==FacilityCategory::LIFE_QUALITY)
+                str += " 0 ";
+            else if (facilityCategory == FacilityCategory::ECONOMY)
+                str += " 1 ";
+            else 
+                str += " 2 ";
+
+            str += std::to_string(price) + " " + std::to_string(lifeQualityScore) + " " + std::to_string(economyScore) + " " + std::to_string(environmentScore)+" "+statusToString();
+            return str; 
         }
-        ChangePlanPolicy *clone() const override{
 
+
+
+//PrintPlanStatus Class
+        PrintPlanStatus::PrintPlanStatus(int planId):planId(planId){}
+
+        void PrintPlanStatus::act(Simulation &simulation) {
+            if(!simulation.isPlanExists(planId))
+                error("Plan doesn't exist");
+            else{
+                Plan &plan = simulation.getPlan(planId);
+                plan.printStatus();
+                complete();
+            }
+
+            simulation.addAction(this);
         }
-        const string toString() const override{
+        PrintPlanStatus *PrintPlanStatus::clone() const { return new PrintPlanStatus(*this); }
 
+
+        const string PrintPlanStatus:: toString() const {
+            string str = "planStatus " + std::to_string(planId) + " " + statusToString();
+            return str;
         }
-    private:
-        const int planId;
-        const string newPolicy;
-};
 
 
-class PrintActionsLog : public BaseAction {
-    public:
-        PrintActionsLog(){
 
+
+//ChangePlanPolicy Class
+        ChangePlanPolicy::ChangePlanPolicy(const int planId, const string &newPolicy):planId(planId),newPolicy(newPolicy){}
+
+        void ChangePlanPolicy::act(Simulation &simulation) {
+            string e = "Cannot change selection policy";
+            if (!simulation.isPlanExists(planId))
+                error(e);
+            else{
+                Plan &plan = simulation.getPlan(planId);
+                if(plan.comparePolicy(newPolicy))
+                    error(e);
+                else{
+                    SelectionPolicy *policy = simulation.getSelectionPolicy(plan.getTotalLifeQualityScore(), plan.getTotalEconomyScore(), plan.getTotalEnviromentScore(), newPolicy);
+                    if(policy==nullptr)
+                        error(e);
+                    else{
+                        plan.setSelectionPolicy(policy);
+                        complete();
+                    }
+                }
+            }
+
+            simulation.addAction(this);
         }
-        void act(Simulation &simulation) override{
 
+        ChangePlanPolicy *ChangePlanPolicy::clone() const { return new ChangePlanPolicy(*this); }
+
+
+        const string ChangePlanPolicy::toString() const {
+            string str = "changePolicy " + std::to_string(planId) + " " + newPolicy + " " + statusToString();
+            return str;
         }
-        PrintActionsLog *clone() const override{
 
+//PrintActionsLog Class
+        PrintActionsLog::PrintActionsLog(){}
+        void PrintActionsLog::act(Simulation &simulation) {
+            simulation.printActionsLog();
+            complete();
+            simulation.addAction(this);
         }
-        const string toString() const override{
 
+        PrintActionsLog *PrintActionsLog::clone() const { return new PrintActionsLog(*this); }
+
+        const string PrintActionsLog:: toString() const {
+            string str = "log "+statusToString();
+            return str;
         }
-    private:
-};
 
-class Close : public BaseAction {
-    public:
-        Close(){
-
+//Close Class
+        Close::Close(){}
+        void Close::act(Simulation &simulation) {
+            simulation.close();
+            complete();
+            simulation.addAction(this);
         }
-        void act(Simulation &simulation) override{
+        Close *Close::clone() const { return new Close(*this); }
 
+        const string Close::toString() const {
+            string str = "close " + statusToString();
+            return str;
         }
-        Close *clone() const override{
 
+//BackupSimulation Class
+        BackupSimulation::BackupSimulation(){}
+
+        void BackupSimulation::act(Simulation &simulation) {
+            if (backup != nullptr)
+            {
+                delete backup;
+            }
+            backup = new Simulation(simulation);
+            complete();
+            simulation.addAction(this);
         }
-        const string toString() const override{
 
+        BackupSimulation *BackupSimulation::clone() const { return new BackupSimulation(*this); }
+
+        const string BackupSimulation::toString() const {
+            string str = "backup " + statusToString();
+            return str;
         }
-    private:
-};
 
-class BackupSimulation : public BaseAction {
-    public:
-        BackupSimulation(){
+//RestoreSimualtion Class
+        RestoreSimulation::RestoreSimulation(){}
 
+        void RestoreSimulation::act(Simulation &simulation) {
+            if(backup==nullptr)
+                error("No backup available");
+            else{
+                 simulation = *backup;
+                complete();
+            }
+            simulation.addAction(this);
         }
-        void act(Simulation &simulation) override{
 
+        RestoreSimulation *RestoreSimulation::clone() const { return new RestoreSimulation(*this); }
+
+        const string RestoreSimulation::toString() const {
+            string str = "restore " + statusToString();
+            return str;
         }
-        BackupSimulation *clone() const override{
-
-        }
-        const string toString() const override{
-
-        }
-    private:
-};
-
-
-class RestoreSimulation : public BaseAction {
-    public:
-        RestoreSimulation(){
-
-        }
-        void act(Simulation &simulation) override{
-
-        }
-        RestoreSimulation *clone() const override{
-
-        }
-        const string toString() const override{
-            
-        }
-    private:
-};
