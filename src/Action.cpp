@@ -179,7 +179,7 @@ extern Simulation *backup;
                 if(plan.comparePolicy(newPolicy))
                     error(e);
                 else{
-                    SelectionPolicy *policy = simulation.getSelectionPolicy(plan.getlifeQualityScore(), plan.getEconomyScore(), plan.getEnvironmentScore(), newPolicy);
+                    SelectionPolicy *policy = simulation.getSelectionPolicy(plan.getTotalLifeQualityScore(), plan.getTotalEconomyScore(), plan.getTotalEnviromentScore(), newPolicy);
                     if(policy==nullptr)
                         error(e);
                     else{

@@ -19,6 +19,9 @@ class Plan {
 
         //
         bool comparePolicy(const string &policyToCompare);
+        const int getTotalLifeQualityScore() const;
+        const int getTotalEconomyScore() const;
+        const int getTotalEnviromentScore() const;
         //
 
         void setSelectionPolicy(SelectionPolicy *selectionPolicy);

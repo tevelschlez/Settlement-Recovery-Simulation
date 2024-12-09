@@ -12,8 +12,11 @@ using std::vector;
         //need to initialize the scores to be 0
     Plan::Plan(const int planId, const Settlement &settlement, SelectionPolicy *selectionPolicy, const vector<FacilityType> &facilityOptions) : plan_id(planId), settlement(settlement), selectionPolicy(selectionPolicy), status(PlanStatus::AVALIABLE),  facilities(), underConstruction(), facilityOptions(facilityOptions), life_quality_score(0),economy_score(0),environment_score(0),constructionLimit(getConstructionLimit()){}
 
+    const int Plan::getlifeQualityScore() const{ return life_quality_score;}
+    const int Plan::getEconomyScore() const { return economy_score; }
+    const int Plan::getEnvironmentScore() const { return environment_score;}
 
-    const int Plan::getlifeQualityScore() const{
+    const int Plan::getTotalLifeQualityScore() const{
         int totalLifeQualityScore = 0;
         for (auto *facility:underConstruction)
             totalLifeQualityScore += facility->getLifeQualityScore();
@@ -22,7 +25,7 @@ using std::vector;
         return totalLifeQualityScore;
     }
 
-    const int Plan::getEconomyScore() const{
+    const int Plan::getTotalEconomyScore() const{
         int totalEconomtScore = 0;
         for (auto *facility : underConstruction)
             totalEconomtScore += facility->getEconomyScore();
@@ -31,7 +34,7 @@ using std::vector;
         return totalEconomtScore;
     }
 
-    const int Plan::getEnvironmentScore() const{
+    const int Plan::getTotalEnviromentScore() const{
         int totalEnviromentScore = 0;
         for (auto *facility : underConstruction)
             totalEnviromentScore += facility->getEnvironmentScore();
