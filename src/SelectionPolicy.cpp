@@ -54,7 +54,12 @@ using std::vector;
                     counter++;
                 }
 
-                return facilitiesOptions[index];
+                const FacilityType &chosenFacility = facilitiesOptions[index];
+                LifeQualityScore += chosenFacility.getLifeQualityScore();
+                EconomyScore += chosenFacility.getEconomyScore();
+                EnvironmentScore += chosenFacility.getEnvironmentScore();
+
+                return chosenFacility;
             }
 
             int BalancedSelection::minAmongScores(int sum_lifeQuality, int sum_economy, int sum_enviroment)

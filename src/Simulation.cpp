@@ -195,9 +195,7 @@ class Auxiliary;
 
                 if(actionType=="restore"){
                     action = new RestoreSimulation();
-                    //action->act(*this);
-                    //addAction(action);
-                    //continue;
+                    
                 }
 
                 action->act(*this);
@@ -352,7 +350,7 @@ Simulation::Simulation(const Simulation &other) :
     for (auto settlement : other.settlements){
         settlements.push_back(new Settlement(*settlement));
     }
-    // TODO: Need to create a plan with a settlement that has the same name of the settlement in otherPlan but that settlement is in the settlements vector of this Plan.
+
     for(auto plan : other.plans){
         plans.push_back(Plan(plan, getSettlement(plan.getSettlement().getName())));
     }
@@ -381,9 +379,7 @@ Simulation &Simulation::operator=(const Simulation &other)
         }
 
         plans.clear();
-        // TODO: Need to create a plan with a settlement that has the same name of the settlement in otherPlan but that settlement is in the settlements vector of this Plan.
         for (auto plan : other.plans) {
-//            Settlement temp = plan.getSettlment();
             plans.push_back(Plan(plan, getSettlement(plan.getSettlement().getName())));
         }
 
