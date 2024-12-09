@@ -208,7 +208,7 @@ class Auxiliary;
             else
             {
                 planCounter++;
-                plans.push_back(Plan(planCounter, settlement, selectionPolicy, facilitiesOptions));
+                plans.push_back(Plan(planCounter, settlement, std::move(selectionPolicy), facilitiesOptions));
             }
         }
 

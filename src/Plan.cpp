@@ -14,7 +14,7 @@ using std::vector;
 
     const int Plan::getlifeQualityScore() const{ return life_quality_score;}
     const int Plan::getEconomyScore() const { return economy_score; }
-    const int Plan::getEnvironmentScore() const { return environment_score;}
+    const int Plan::getEnvironmentScore() const { return environment_score; }
 
     const int Plan::getTotalLifeQualityScore() const{
         int totalLifeQualityScore = 0;
@@ -47,6 +47,7 @@ using std::vector;
         string str = "planID: " + std::to_string(plan_id) + "\n";
         str += "previousPolicy: " + this->selectionPolicy->toString() + "\n";
         str += "newPolicy: " + selectionPolicy->toString() ;
+        delete this->selectionPolicy;
         this->selectionPolicy = selectionPolicy;
         std::cout << str << std::endl;
     }
@@ -177,7 +178,7 @@ using std::vector;
     facilityOptions(other.facilityOptions),
     life_quality_score(other.life_quality_score),
     economy_score(other.economy_score),
-    environment_score(other.economy_score),
+    environment_score(other.environment_score),
     constructionLimit(other.constructionLimit)
     {
     for (Facility* facility : other.facilities){
